@@ -2,6 +2,7 @@ import * as Dat from 'dat.gui';
 import { Scene, Color } from 'three';
 import { Flower, Land } from 'objects';
 import { BasicLights } from 'lights';
+import * as THREE from 'three';
 
 class SeedScene extends Scene {
     constructor() {
@@ -16,7 +17,7 @@ class SeedScene extends Scene {
         };
 
         // Set background to a nice color
-        this.background = new Color(0x0);
+        this.background = new Color(0x7ec0ee);
 
         // Add meshes to scene
         const land = new Land();
@@ -26,6 +27,17 @@ class SeedScene extends Scene {
 
         // Populate GUI
         this.state.gui.add(this.state, 'rotationSpeed', -5, 5);
+
+        // Add plane mesh
+        const geometry = new THREE.PlaneGeometry( 10, 10 );
+        const material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
+        const plane = new THREE.Mesh( geometry, material );
+        console.log(plane.position)
+        this.add(plane);
+    }
+
+    addBoundaries() {
+
     }
 
     addToUpdateList(object) {
@@ -34,7 +46,7 @@ class SeedScene extends Scene {
 
     update(timeStamp) {
         const { rotationSpeed, updateList } = this.state;
-        this.rotation.y = (rotationSpeed * timeStamp) / 10000;
+        // this.rotation.y = (rotationSpeed * timeStamp) / 10000;
 
         // Call update for each object in the updateList
         for (const obj of updateList) {
