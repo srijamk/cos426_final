@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { Vector3 } from 'three';
+import PLAYER from '../../textures/main_shooter.png';
 
 class Player extends THREE.Group {
 
@@ -10,11 +11,11 @@ class Player extends THREE.Group {
         let { radius, playerPos, boundary } = playerStatus;
         
         // draw a triangle
-        const player = this.makeTriangle();
+        this.initPlayer();
 
         this.radius = radius;
         this.position.set(playerPos.x, playerPos.y, playerPos.z);
-        this.speed = 0.2;
+        this.speed = 8;
         this.currentState = 0; // -1 is right, +1 is left, 0 is stop
         this.health = 10;
 
@@ -22,23 +23,14 @@ class Player extends THREE.Group {
         this.netForces = new Vector3();
 
         this.boundary = boundary;
-        
-        this.add(player);
     }
 
-    makeTriangle () {
-        const vertices = [
-            0, 10, 0, // top
-            5, 0, 10, // right
-            -5, 0, 10 // left
-        ];
-
-        const faces = [2, 1, 0];
-        const geometry = new THREE.PolyhedronGeometry(vertices, faces, this.radius);
-        const material = new THREE.MeshNormalMaterial();
-        const triangle = new THREE.Mesh(geometry, material);
-
-        return triangle;
+    initPlayer () {
+        let texture = new THREE.TextureLoader().load(PLAYER);
+        let material = new THREE.SpriteMaterial ( {map:texture} );
+        let sprite = new THREE.Sprite(material);
+        sprite.scale.set(30, 30, 1);
+        this.add(sprite);
     }
 
     handLeftRightMovement() {

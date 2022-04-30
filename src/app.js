@@ -12,34 +12,19 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { SeedScene, MainScene } from 'scenes';
 
 
-function handleKey() {
-
-}
-
-// Initialize core ThreeJS components
-// const scene = new SeedScene();
-const scene = new MainScene();
-// const camera = new PerspectiveCamera();
-
-// Set up Top-down camera
 const aspect = window.innerWidth / window.innerHeight;
-// const fov = 45;
-// const near = 0.1;
-// const far = 100;
-
-// const camera = new THREE.PerspectiveCamera( fov, aspect, near, far );
-// camera.position.set(0, 20, 0);
-// camera.up.set(0, 0, -1);
-// camera.lookAt(0, 0, 0);
-
-const cameraWidth = 25;
+const cameraWidth = 1000;
 const cameraHeight = cameraWidth / aspect;
 const camera = new THREE.OrthographicCamera(
-    cameraWidth / -2, cameraWidth / 2, cameraHeight / 2, cameraHeight / -2, 0, 1000
+    cameraWidth / -2, cameraWidth / 2, cameraHeight / 2, cameraHeight / -2, 0, 150
 );
 camera.position.set(0, 50, 0);
 camera.up.set(0, 0, -1);
 camera.lookAt(0, 0, 0);
+
+const bounds = {width: cameraWidth, height: cameraHeight};
+
+const scene = new MainScene(bounds);
 
 // Set up renderer, canvas, and minor CSS adjustments
 const renderer = new WebGLRenderer({ antialias: true });
@@ -53,8 +38,11 @@ document.body.appendChild(canvas);
 // handle user input
 
 const keyActions = {
-    ArrowLeft: { isPressed: false}, 
-    ArrowRight: { isPressed: false}
+    ArrowLeft: { isPressed: false,  keyCode: 37 }, 
+    ArrowRight: { isPressed: false, keyCode: 39 }, 
+    ArrowUp: { isPressed: false, keyCode: 38 }, 
+    ArrowDown: { isPressed: false, keyCode: 40 }, 
+    f: { isPressed: false, keyCode: 70} // press f to shoot
 };
 
 // https://stackoverflow.com/questions/4416505/how-to-take-keyboard-input-in-javascript
@@ -91,6 +79,10 @@ const onAnimationFrameHandler = (timeStamp) => {
         scene.updatePlayerLocation(1);
     }
 
+    if (keyActions['f'].isPressed) {
+        scene.updatePlayerShoot();
+    }
+
 
     renderer.render(scene, camera);
     scene.update && scene.update(timeStamp);
@@ -101,6 +93,7 @@ window.requestAnimationFrame(onAnimationFrameHandler);
 // Resize Handler
 const windowResizeHandler = () => {
     const { innerHeight, innerWidth } = window;
+
     renderer.setSize(innerWidth, innerHeight);
     camera.aspect = innerWidth / innerHeight;
     camera.updateProjectionMatrix();
