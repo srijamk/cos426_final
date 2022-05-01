@@ -3,8 +3,12 @@ import { Color } from 'three';
 import { BasicLights } from 'lights';
 import { Player, Wall } from 'objects';
 import STAR from '../textures/star.png';
+import SPARK from '../textures/spark1.png';
 import { Vector3 } from 'three';
 import { Scene } from 'three';
+
+const NUM_PARTICLES = 1000;
+const PARTICLE_RADIUS = 1.3;
 
 class MainScene extends THREE.Scene {
     constructor (bounds) {
@@ -62,59 +66,108 @@ class MainScene extends THREE.Scene {
         this.add(lights, this.player);
     }
 
+    returnVertexShader() {
+        return `
+        attribute float size;
+
+        varying vec3 vColor;
+
+        void main() {
+
+            vColor = color;
+
+            vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+
+            gl_PointSize = size * ( 300.0 / -mvPosition.z );
+
+            gl_Position = projectionMatrix * mvPosition;
+
+        }`
+    }
+
+    returnFragmentShader() {
+        return `
+        uniform sampler2D pointTexture;
+
+        varying vec3 vColor;
+
+        void main() {
+
+            gl_FragColor = vec4( vColor, 1 );
+
+            gl_FragColor = gl_FragColor * texture2D( pointTexture, gl_PointCoord );
+
+        }
+        `
+    }
+
     // https://github.com/mrdoob/three.js/blob/master/examples/webgl_buffergeometry_points_interleaved.html
     initStars () {
-        const NUM_PARTICLES = 2000;
-        const geometry = new THREE.BufferGeometry();
-        const arrayBuffer = new ArrayBuffer( NUM_PARTICLES * 16 );
-        const interleavedFloat32Buffer = new Float32Array( arrayBuffer );
-		const interleavedUint8Buffer = new Uint8Array( arrayBuffer );
+        let uniforms = {
+            pointTexture: { value: new THREE.TextureLoader().load( SPARK ) }
+        };
+
+        const shaderMaterial = new THREE.ShaderMaterial( {
+
+            uniforms: uniforms,
+            vertexShader: this.returnVertexShader(),
+            fragmentShader: this.returnFragmentShader(),
+
+            blending: THREE.AdditiveBlending,
+            depthTest: false,
+            transparent: true,
+            vertexColors: true
+
+        } );
+
+        this.geometry = new THREE.BufferGeometry();
+
+        const positions = [];
+        const colors = [];
+        const sizes = [];
+
         const color = new THREE.Color();
 
-        const n = 1000, n2 = n / 2; // particles spread in the cube
+        const n = 1000; const n2 = n/2;
 
-        for ( let i = 0; i < interleavedFloat32Buffer.length; i += 4 ) {
-
-            // position (first 12 bytes)
-
-            const x = Math.random() * n - n2;
+        for ( let i = 0; i < NUM_PARTICLES; i ++ ) {
+            const x = (Math.random() * n - n2) * PARTICLE_RADIUS;
             const y = 0;
-            const z = Math.random() * n - n2;
+            const z = (Math.random() * n - n2) * PARTICLE_RADIUS;
 
-            interleavedFloat32Buffer[ i + 0 ] = x;
-            interleavedFloat32Buffer[ i + 1 ] = y;
-            interleavedFloat32Buffer[ i + 2 ] = z;
-
-            // color (last 4 bytes)
+            positions.push( x );
+            positions.push( y );
+            positions.push( z );
 
             const vx = ( x / n ) + 0.5;
             const vy = ( y / n ) + 0.5;
             const vz = ( z / n ) + 0.5;
 
-            color.setRGB( vx, vy, vz );
+            // color.setRGB( vx, vy, vz );
+            // color.setHSL( i / NUM_PARTICLES, 1.0, 0.5 );
+            // colors.push( color.r, color.g, color.b );
+            colors.push(vx, vy, vz)
 
-            const j = ( i + 3 ) * 4;
-
-            interleavedUint8Buffer[ j + 0 ] = color.r * 255;
-            interleavedUint8Buffer[ j + 1 ] = color.g * 255;
-            interleavedUint8Buffer[ j + 2 ] = color.b * 255;
-            interleavedUint8Buffer[ j + 3 ] = 0; // not needed
+            sizes.push( 10 );
 
         }
 
-        const interleavedBuffer32 = new THREE.InterleavedBuffer( interleavedFloat32Buffer, 4 );
-        const interleavedBuffer8 = new THREE.InterleavedBuffer( interleavedUint8Buffer, 16 );
+        this.geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
+        this.geometry.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
+        this.geometry.setAttribute( 'size', new THREE.Float32BufferAttribute( sizes, 1 ).setUsage( THREE.DynamicDrawUsage ) );
 
-        geometry.setAttribute( 'position', new THREE.InterleavedBufferAttribute( interleavedBuffer32, 3, 0, false ) );
-        geometry.setAttribute( 'color', new THREE.InterleavedBufferAttribute( interleavedBuffer8, 3, 12, true ) );
-        const material = new THREE.PointsMaterial( { size: 1, vertexColors: true } );
-
-        this.points = new THREE.Points( geometry, material );
-        this.add( this.points );
+        this.particleSystem = new THREE.Points( this.geometry, shaderMaterial );
+        this.add( this.particleSystem );
     }  
 
     animateStars (timeStamp) {
-        this.points.x = timeStamp / 10000;
+        const time = timeStamp / 500;
+        const sizes = this.geometry.attributes.size.array;
+        for ( let i = 0; i < NUM_PARTICLES; i ++ ) {
+            sizes[ i ] = 1.5 * ( 1 + Math.sin( 0.1 * i + time ) );
+        }
+
+        this.geometry.attributes.size.needsUpdate = true;
     }
 
     resetEverything () {
@@ -141,7 +194,7 @@ class MainScene extends THREE.Scene {
 
     update (timeStamp) {
         this.player.update();
-        // this.animateStars(timeStamp);
+        this.animateStars(timeStamp);
     }
 }
 
