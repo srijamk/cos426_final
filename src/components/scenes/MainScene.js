@@ -31,6 +31,18 @@ class MainScene extends THREE.Scene {
     resetEverything () {
     }
 
+    freeze() {
+        // TODO: freeze all player and enemy activity
+        this.status.isPaused = true;
+        this.player.frozen = true;
+    }
+
+    unfreeze() {
+        // TODO: unfreeze all player and enemy activity
+        this.status.isPaused = false;
+        this.player.frozen = false;
+    }
+
     resetPlayerStatus () {
         this.player.currentState = 0;
     }

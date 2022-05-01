@@ -7,9 +7,8 @@ class StartScene extends THREE.Scene {
     constructor() {
         super();
 
-        console.log(window.location.pathname);
         var curScene = this;
-       this.background = new THREE.Color(0x7ec0ee);
+        this.background = new THREE.Color(0x7ec0ee);
 
 
         // font from https://www.fontspace.com/category/space
@@ -32,6 +31,9 @@ class StartScene extends THREE.Scene {
               });
               
             var txt = new THREE.Mesh(geometry, material);
+            txt.translateZ(-50);
+            txt.translateY(2);
+            txt.renderOrder = 1;
 
             curScene.add(txt);
         } );
@@ -52,7 +54,9 @@ class StartScene extends THREE.Scene {
               });
               
             var txt = new THREE.Mesh(geometry, material);
-            txt.position.z += 50;
+            txt.translateZ(-10);
+            txt.translateY(-8);
+            txt.renderOrder = 1;
 
             curScene.add(txt);
         } );

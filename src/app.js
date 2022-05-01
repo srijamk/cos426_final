@@ -10,6 +10,9 @@ import * as THREE from 'three';
 import { WebGLRenderer, PerspectiveCamera, OrthographicCamera, Vector3 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { SeedScene, MainScene, StartScene } from 'scenes';
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
+import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
+import { StartFont, SpaceMissionFont, CyberskyFont } from './fonts';
 
 
 function handleKey() {
@@ -22,6 +25,7 @@ function handleKey() {
 let scene = new StartScene();
 let sceneNumber = 0;
 let camera = new PerspectiveCamera();
+let frozen = false;
 //camera.position.set(0, 50, 0);
 camera.position.set(0, 300, 400);
 camera.up.set(0, 0, -10);
@@ -42,7 +46,7 @@ const cameraWidth = 25;
 const cameraHeight = cameraWidth / aspect;
 
 // Set up renderer, canvas, and minor CSS adjustments
-const renderer = new WebGLRenderer({ antialias: true });
+const renderer = new WebGLRenderer({ antialias: true, alpha: true });
 renderer.setPixelRatio(window.devicePixelRatio);
 const canvas = renderer.domElement;
 canvas.style.display = 'block'; // Removes padding below canvas
@@ -61,18 +65,95 @@ const keyActions = {
 window.addEventListener("keydown", function (event) {
 
     // if we're on start scene and user presses Space, move to game scene (MainScene)
-    if (event.keyCode == 32 && sceneNumber == 0) {
-        sceneNumber++;
-        scene = new MainScene();
-        camera = new THREE.OrthographicCamera(
-            cameraWidth / -2, cameraWidth / 2, cameraHeight / 2, cameraHeight / -2, 0, 1000
-        );
-        camera.position.set(0, 50, 0);
-        camera.up.set(0, 0, -1);
-        camera.lookAt(0, 0, 0);
-        renderer.render(scene, camera);
-        scene.update && scene.update(timeStamp);
-        window.requestAnimationFrame(onAnimationFrameHandler);
+    if (event.keyCode == 32) {
+        if (sceneNumber == 0) {
+            sceneNumber++;
+            scene = new MainScene();
+            camera = new THREE.OrthographicCamera(
+                cameraWidth / -2, cameraWidth / 2, cameraHeight / 2, cameraHeight / -2, 0, 1000
+            );
+            camera.position.set(0, 50, 0);
+            camera.up.set(0, 0, -1);
+            camera.lookAt(0, 0, 0);
+            renderer.render(scene, camera);
+            scene.update && scene.update(timeStamp);
+            window.requestAnimationFrame(onAnimationFrameHandler);
+        } else if (!frozen) {
+            // if user presses Space while playing game, freeze and display a pause screen
+            console.log("freeze!");
+            frozen = true;
+            scene.freeze();
+            const geometry = new THREE.PlaneGeometry( window.outerWidth, window.outerHeight );
+            const material = new THREE.MeshBasicMaterial( {color: 0xffffff, side: THREE.DoubleSide, transparent: true, opacity: 0.3} );
+            const plane = new THREE.Mesh( geometry, material );
+            plane.rotation.x = 90;
+    
+            const loader = new FontLoader();
+            loader.load( CyberskyFont, function ( font ) {
+            
+                const geometry = new TextGeometry( 'Game paused', {
+                    font: font,
+                    size: 2,
+                    height: 1,
+                    curveSegments: 13,
+                    bevelEnabled: false,
+                } );
+                geometry.center();
+    
+                var material = new THREE.MeshBasicMaterial({
+                    color: 0x000000,
+                  });
+                  
+                var txt = new THREE.Mesh(geometry, material);
+                txt.position.copy(camera.position);
+                txt.rotation.copy(camera.rotation);
+                txt.translateZ(-10);
+                txt.translateY(2);
+                txt.renderOrder = 1;
+    
+                scene.add(txt);
+                console.log(scene);
+            } );
+
+            loader.load( CyberskyFont, function ( font ) {
+        
+                const geometry = new TextGeometry( 'Press Space to resume.', {
+                    font: font,
+                    size: 0.5,
+                    height: 1,
+                    curveSegments: 13,
+                    bevelEnabled: false,
+                } );
+                geometry.center();
+    
+                var material = new THREE.MeshBasicMaterial({
+                    color: 0x000000,
+                  });
+                  
+                  var txt = new THREE.Mesh(geometry, material);
+                  txt.position.copy(camera.position);
+                  txt.rotation.copy(camera.rotation);
+                  txt.translateZ(-10);
+                  txt.translateY(1);
+                  txt.renderOrder = 2;
+
+                  scene.add(txt);
+            } );
+    
+            console.log(plane.position);
+            scene.add(plane);
+            renderer.render(scene, camera);
+            scene.unfreeze();
+        } else if (frozen) {
+            console.log("unfreeze");
+            frozen = false;
+            scene.remove(scene.children[scene.children.length - 1]);
+            scene.remove(scene.children[scene.children.length - 1]);
+            scene.remove(scene.children[scene.children.length - 1]);
+            renderer.render(scene, camera);
+            scene.unfreeze();
+        }
+
     }
     if (event.defaultPrevented) return; 
 
