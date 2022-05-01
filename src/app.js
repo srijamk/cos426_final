@@ -83,9 +83,9 @@ window.addEventListener("keydown", function (event) {
             camera.position.set(0, 50, 0);
             camera.up.set(0, 0, -1);
             camera.lookAt(0, 0, 0);
-            renderer.render(scene, camera);
-            scene.update && scene.update(timeStamp);
-            window.requestAnimationFrame(onAnimationFrameHandler);
+            // renderer.render(scene, camera);
+            //scene.update && scene.update(timeStamp);
+            //window.requestAnimationFrame(onAnimationFrameHandler);
         } else if (!frozen) {
             // if user presses Space while playing game, freeze and display a pause screen
             frozen = true;

@@ -19,6 +19,8 @@ class MainScene extends THREE.Scene {
 
         this.bounds = bounds;
 
+        this.background = new Color(0x000000);
+
         this.status = {
             isPaused: false
         }
