@@ -4,11 +4,13 @@ import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
 import { StartFont, SpaceMissionFont, CyberskyFont } from '../../fonts';
 
 class StartScene extends THREE.Scene {
-    constructor() {
+    constructor(rotation) {
         super();
 
         var curScene = this;
         this.background = new THREE.Color(0x7ec0ee);
+        this.rotn = rotation;
+        this.rotn += 0.1;
 
 
         // font from https://www.fontspace.com/category/space
@@ -20,7 +22,7 @@ class StartScene extends THREE.Scene {
             const geometry = new TextGeometry( 'Defender', {
                 font: font,
                 size: 80,
-                height: 1,
+                height: 3,
                 curveSegments: 13,
                 bevelEnabled: false,
             } );
@@ -31,6 +33,7 @@ class StartScene extends THREE.Scene {
               });
               
             var txt = new THREE.Mesh(geometry, material);
+            txt.rotation.copy(curScene.rotn);
             txt.translateZ(-50);
             txt.translateY(2);
             txt.renderOrder = 1;
@@ -55,8 +58,9 @@ class StartScene extends THREE.Scene {
               });
               
             var txt = new THREE.Mesh(geometry, material);
+            txt.rotation.copy(curScene.rotn);
             txt.translateZ(-10);
-            txt.translateY(-8);
+            txt.translateY(-40);
             txt.renderOrder = 1;
 
             curScene.add(txt);
