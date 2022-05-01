@@ -7,9 +7,9 @@
  *
  */
 import * as THREE from 'three';
-import { WebGLRenderer, PerspectiveCamera, Vector3 } from 'three';
+import { WebGLRenderer, PerspectiveCamera, OrthographicCamera, Vector3 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { SeedScene, MainScene } from 'scenes';
+import { SeedScene, MainScene, StartScene } from 'scenes';
 
 
 function handleKey() {
@@ -18,8 +18,14 @@ function handleKey() {
 
 // Initialize core ThreeJS components
 // const scene = new SeedScene();
-const scene = new MainScene();
-// const camera = new PerspectiveCamera();
+//const scene = new MainScene();
+let scene = new StartScene();
+let sceneNumber = 0;
+let camera = new PerspectiveCamera();
+//camera.position.set(0, 50, 0);
+camera.position.set(0, 300, 400);
+camera.up.set(0, 0, -10);
+camera.lookAt(0, 0, 0);
 
 // Set up Top-down camera
 const aspect = window.innerWidth / window.innerHeight;
@@ -34,12 +40,6 @@ const aspect = window.innerWidth / window.innerHeight;
 
 const cameraWidth = 25;
 const cameraHeight = cameraWidth / aspect;
-const camera = new THREE.OrthographicCamera(
-    cameraWidth / -2, cameraWidth / 2, cameraHeight / 2, cameraHeight / -2, 0, 1000
-);
-camera.position.set(0, 50, 0);
-camera.up.set(0, 0, -1);
-camera.lookAt(0, 0, 0);
 
 // Set up renderer, canvas, and minor CSS adjustments
 const renderer = new WebGLRenderer({ antialias: true });
@@ -59,6 +59,21 @@ const keyActions = {
 
 // https://stackoverflow.com/questions/4416505/how-to-take-keyboard-input-in-javascript
 window.addEventListener("keydown", function (event) {
+
+    // if we're on start scene and user presses Space, move to game scene (MainScene)
+    if (event.keyCode == 32 && sceneNumber == 0) {
+        sceneNumber++;
+        scene = new MainScene();
+        camera = new THREE.OrthographicCamera(
+            cameraWidth / -2, cameraWidth / 2, cameraHeight / 2, cameraHeight / -2, 0, 1000
+        );
+        camera.position.set(0, 50, 0);
+        camera.up.set(0, 0, -1);
+        camera.lookAt(0, 0, 0);
+        renderer.render(scene, camera);
+        scene.update && scene.update(timeStamp);
+        window.requestAnimationFrame(onAnimationFrameHandler);
+    }
     if (event.defaultPrevented) return; 
 
     if (!keyActions.hasOwnProperty(event.key)) return;
