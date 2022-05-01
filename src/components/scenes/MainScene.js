@@ -19,7 +19,7 @@ class MainScene extends THREE.Scene {
 
         let playerStatus = {
             radius: 0.1, 
-            playerPos: new THREE.Vector3(0, 0, 10), 
+            playerPos: new THREE.Vector3(0, 0, 0), 
             boundary: {left: -10, right: 10}
         }
 
@@ -29,7 +29,6 @@ class MainScene extends THREE.Scene {
     }
 
     resetEverything () {
-        
     }
 
     resetPlayerStatus () {
