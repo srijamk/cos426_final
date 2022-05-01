@@ -1,9 +1,10 @@
 import * as THREE from 'three';
 import { Color } from 'three';
 import { BasicLights } from 'lights';
-import { Player, Wall, Enemy, Bullets } from 'objects';
+import { Player, Wall, Enemy } from 'objects';
 import SPARK from '../textures/spark1.png';
 import { Vector3 } from 'three';
+import Bullets from '../objects/Bullets/Bullets';
 
 // modified effects from: https://github.com/mrdoob/three.js/blob/master/examples/webgl_buffergeometry_custom_attributes_particles.html
 
