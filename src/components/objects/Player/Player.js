@@ -25,7 +25,6 @@ class Player extends THREE.Group {
         this.speed = 0.2;
         this.currentState = 0; // -1 is right, +1 is left, 0 is stop
         this.health = 10;
-        this.frozen = false;
 
         this.velocity = new Vector3();
         this.netForces = new Vector3();
@@ -51,7 +50,6 @@ class Player extends THREE.Group {
     }
 
     handLeftRightMovement() {
-        if (this.frozen) return;
         if (this.velocity.x !== 0) this.velocity.x = 0;
 
         let f = new Vector3(this.speed * this.currentState, 0, 0);

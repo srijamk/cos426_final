@@ -177,6 +177,11 @@ window.addEventListener("keyup", function (event) {
 // Render loop
 const onAnimationFrameHandler = (timeStamp) => {
 
+    renderer.render(scene, camera);
+    scene.update && scene.update(timeStamp);
+    window.requestAnimationFrame(onAnimationFrameHandler);
+    if (frozen) return;
+
     // handle player events
     scene.resetPlayerStatus();
     if (keyActions['ArrowLeft'].isPressed) {
@@ -186,11 +191,6 @@ const onAnimationFrameHandler = (timeStamp) => {
     if (keyActions['ArrowRight'].isPressed) {
         scene.updatePlayerLocation(1);
     }
-
-
-    renderer.render(scene, camera);
-    scene.update && scene.update(timeStamp);
-    window.requestAnimationFrame(onAnimationFrameHandler);
 };
 window.requestAnimationFrame(onAnimationFrameHandler);
 
