@@ -13,6 +13,7 @@ import { SeedScene, MainScene, StartScene } from 'scenes';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
 import { StartFont, SpaceMissionFont, CyberskyFont } from './fonts';
+import { SelectSound } from './assets';
 
 
 // <<<<<<< test
@@ -72,6 +73,8 @@ window.addEventListener("keydown", function (event) {
     // if we're on start scene and user presses Space, move to game scene (MainScene)
     if (event.keyCode == 32) {
         if (sceneNumber == 0) {
+            var myAudio = new Audio(SelectSound);
+            myAudio.play();
             sceneNumber++;
             scene = new MainScene(bounds);
             camera = new THREE.OrthographicCamera(
