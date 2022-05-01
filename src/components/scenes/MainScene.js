@@ -1,18 +1,23 @@
 import * as THREE from 'three';
 import { Color } from 'three';
 import { BasicLights } from 'lights';
-import { Player, Wall } from 'objects';
+import { Player, Wall, Enemy } from 'objects';
 import SPARK from '../textures/spark1.png';
+import { Vector3 } from 'three';
 
 // modified effects from: https://github.com/mrdoob/three.js/blob/master/examples/webgl_buffergeometry_custom_attributes_particles.html
 
 const NUM_PARTICLES = 1000;
 const PARTICLE_RADIUS = 1.3;
 const PLAYER_SCALE = 50;
+const ENEMY_SCALE = 50;
+const NUM_ENEMIES = 3;
 
 class MainScene extends THREE.Scene {
     constructor (bounds) {
         super();
+
+        this.bounds = bounds;
 
         this.status = {
             isPaused: false
@@ -34,6 +39,9 @@ class MainScene extends THREE.Scene {
 
         // add player
         this.player = new Player(this.playerStatus);
+
+        // add enemies
+        this.initEnemies();
 
         // add lights
         const lights = new BasicLights();
@@ -90,20 +98,21 @@ class MainScene extends THREE.Scene {
         const colors = [];
         const sizes = [];
 
-        const n = 1000; const n2 = n/2;
+        const n1 = this.bounds.width; const n12 = n1/2;
+        const n2 = this.bounds.height; const n22 = n2/2;
 
         for ( let i = 0; i < NUM_PARTICLES; i ++ ) {
-            const x = (Math.random() * n - n2) * PARTICLE_RADIUS;
-            const y = (Math.random() * n - n2) * PARTICLE_RADIUS;
-            const z = (Math.random() * n - n2) * PARTICLE_RADIUS;
+            const x = (Math.random() * n1 - n12) * PARTICLE_RADIUS;
+            const y = (Math.random() * 1000 - 500) * PARTICLE_RADIUS;
+            const z = (Math.random() * n2 - n22) * PARTICLE_RADIUS;
 
             positions.push( x );
             positions.push( 0 );
             positions.push( z );
 
-            const vx = ( x / n ) + 0.5;
-            const vy = ( y / n ) + 0.5;
-            const vz = ( z / n ) + 0.5;
+            const vx = ( x / 1000 ) + 0.5;
+            const vy = ( y / 1000 ) + 0.5;
+            const vz = ( z / 1000 ) + 0.5;
 
             // color.setRGB( vx, vy, vz );
             // color.setHSL( i / NUM_PARTICLES, 1.0, 0.5 );
@@ -122,11 +131,32 @@ class MainScene extends THREE.Scene {
         this.add( this.particleSystem );
     }  
 
+    initEnemies () {
+        this.enemies = []
+        for (let i = 0; i < NUM_ENEMIES; i++) {
+            let status = {
+                scale: ENEMY_SCALE, 
+                pos: this.generateRandomPostion()
+            }
+            let enemy = new Enemy(status);
+            this.enemies.push(enemy);
+            this.add(enemy);
+        }
+    }
+
+    // generate random position for enemies
+    generateRandomPostion () {
+        let x = - this.bounds.width * Math.random() + this.bounds.width / 2;
+        let z = - this.bounds.height * Math.random() + this.bounds.height / 2;
+        console.log(x, z)
+        return new Vector3(x, 0, z);
+    }
+
     animateStars (timeStamp) {
         const time = timeStamp / 500;
         const sizes = this.geometry.attributes.size.array;
         for ( let i = 0; i < NUM_PARTICLES; i ++ ) {
-            sizes[ i ] = 1.5 * ( 1 + Math.sin( 0.1 * i + time ) );
+            sizes[ i ] = 1.8 * ( 1 + Math.sin( 0.1 * i + time ) );
         }
 
         this.geometry.attributes.size.needsUpdate = true;
