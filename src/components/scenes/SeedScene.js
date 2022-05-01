@@ -32,7 +32,7 @@ class SeedScene extends Scene {
         const geometry = new THREE.PlaneGeometry( 10, 10 );
         const material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
         const plane = new THREE.Mesh( geometry, material );
-        console.log(plane.position)
+        console.log(plane.position);
         this.add(plane);
     }
 

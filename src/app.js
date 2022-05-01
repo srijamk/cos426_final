@@ -7,27 +7,50 @@
  *
  */
 import * as THREE from 'three';
-import { WebGLRenderer, PerspectiveCamera, Vector3 } from 'three';
+import { WebGLRenderer, PerspectiveCamera, OrthographicCamera, Vector3 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { SeedScene, MainScene } from 'scenes';
+import { SeedScene, MainScene, StartScene } from 'scenes';
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
+import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
+import { StartFont, SpaceMissionFont, CyberskyFont } from './fonts';
 
 
+// <<<<<<< test
+// =======
+
+// Initialize core ThreeJS components
+// const scene = new SeedScene();
+//const scene = new MainScene();
+let scene = new StartScene();
+let sceneNumber = 0;
+let camera = new PerspectiveCamera();
+let frozen = false;
+//camera.position.set(0, 50, 0);
+camera.position.set(0, 300, 400);
+camera.up.set(0, 0, -10);
+camera.lookAt(0, 0, 0);
+
+// Set up Top-down camera
+// >>>>>>> main
 const aspect = window.innerWidth / window.innerHeight;
 const cameraWidth = 1000;
 const cameraHeight = cameraWidth / aspect;
-const camera = new THREE.OrthographicCamera(
-    cameraWidth / -2, cameraWidth / 2, cameraHeight / 2, cameraHeight / -2, 0, 150
-);
-camera.position.set(0, 50, 0);
-camera.up.set(0, 0, -1);
-camera.lookAt(0, 0, 0);
+// <<<<<<< test
+// // const camera = new THREE.OrthographicCamera(
+// //     cameraWidth / -2, cameraWidth / 2, cameraHeight / 2, cameraHeight / -2, 0, 150
+// // );
+// // camera.position.set(0, 50, 0);
+// // camera.up.set(0, 0, -1);
+// // camera.lookAt(0, 0, 0);
+// =======
+// >>>>>>> main
 
 const bounds = {width: cameraWidth, height: cameraHeight};
 
 const scene = new MainScene(bounds);
 
 // Set up renderer, canvas, and minor CSS adjustments
-const renderer = new WebGLRenderer({ antialias: true });
+const renderer = new WebGLRenderer({ antialias: true, alpha: true });
 renderer.setPixelRatio(window.devicePixelRatio);
 const canvas = renderer.domElement;
 canvas.style.display = 'block'; // Removes padding below canvas
@@ -47,6 +70,98 @@ const keyActions = {
 
 // https://stackoverflow.com/questions/4416505/how-to-take-keyboard-input-in-javascript
 window.addEventListener("keydown", function (event) {
+
+    // if we're on start scene and user presses Space, move to game scene (MainScene)
+    if (event.keyCode == 32) {
+        if (sceneNumber == 0) {
+            sceneNumber++;
+            scene = new MainScene();
+            camera = new THREE.OrthographicCamera(
+                cameraWidth / -2, cameraWidth / 2, cameraHeight / 2, cameraHeight / -2, 0, 1000
+            );
+            camera.position.set(0, 50, 0);
+            camera.up.set(0, 0, -1);
+            camera.lookAt(0, 0, 0);
+            renderer.render(scene, camera);
+            scene.update && scene.update(timeStamp);
+            window.requestAnimationFrame(onAnimationFrameHandler);
+        } else if (!frozen) {
+            // if user presses Space while playing game, freeze and display a pause screen
+            frozen = true;
+            scene.freeze();
+            const geometry = new THREE.PlaneGeometry( window.outerWidth, window.outerHeight );
+            const material = new THREE.MeshBasicMaterial( {color: 0xffffff, side: THREE.DoubleSide, transparent: true, opacity: 0.3} );
+            const plane = new THREE.Mesh( geometry, material );
+            plane.rotation.x = 90;
+    
+            const loader = new FontLoader();
+            
+            // Display a "Game Paused message"
+            loader.load( CyberskyFont, function ( font ) {
+            
+                const geometry = new TextGeometry( 'Game paused', {
+                    font: font,
+                    size: 2,
+                    height: 1,
+                    curveSegments: 13,
+                    bevelEnabled: false,
+                } );
+                geometry.center();
+    
+                var material = new THREE.MeshBasicMaterial({
+                    color: 0x000000,
+                  });
+                  
+                var txt = new THREE.Mesh(geometry, material);
+                txt.position.copy(camera.position);
+                txt.rotation.copy(camera.rotation);
+                txt.translateZ(-10);
+                txt.translateY(2);
+                txt.renderOrder = 1;
+    
+                scene.add(txt);
+            } );
+
+            // Display a "Press Space to resume" message.
+            loader.load( CyberskyFont, function ( font ) {
+        
+                const geometry = new TextGeometry( 'Press Space to resume.', {
+                    font: font,
+                    size: 0.5,
+                    height: 1,
+                    curveSegments: 13,
+                    bevelEnabled: false,
+                } );
+                geometry.center();
+    
+                var material = new THREE.MeshBasicMaterial({
+                    color: 0x000000,
+                  });
+                  
+                  var txt = new THREE.Mesh(geometry, material);
+                  txt.position.copy(camera.position);
+                  txt.rotation.copy(camera.rotation);
+                  txt.translateZ(-10);
+                  txt.translateY(1);
+                  txt.renderOrder = 2;
+
+                  scene.add(txt);
+            } );
+    
+            scene.add(plane);
+            renderer.render(scene, camera);
+            scene.unfreeze();
+        } else if (frozen) {
+            frozen = false;
+            // remove the pause elements from screen
+            scene.remove(scene.children[scene.children.length - 1]);
+            scene.remove(scene.children[scene.children.length - 1]);
+            scene.remove(scene.children[scene.children.length - 1]);
+            renderer.render(scene, camera);
+            scene.unfreeze();
+        }
+
+    }
     if (event.defaultPrevented) return; 
 
     if (!keyActions.hasOwnProperty(event.key)) return;
@@ -69,6 +184,11 @@ window.addEventListener("keyup", function (event) {
 // Render loop
 const onAnimationFrameHandler = (timeStamp) => {
 
+    renderer.render(scene, camera);
+    scene.update && scene.update(timeStamp);
+    window.requestAnimationFrame(onAnimationFrameHandler);
+    if (frozen) return;
+
     // handle player events
     scene.resetPlayerStatus();
     if (keyActions['ArrowLeft'].isPressed) {
@@ -78,15 +198,18 @@ const onAnimationFrameHandler = (timeStamp) => {
     if (keyActions['ArrowRight'].isPressed) {
         scene.updatePlayerLocation(1);
     }
+// <<<<<<< test
 
     if (keyActions['f'].isPressed) {
         scene.updatePlayerShoot();
     }
 
 
-    renderer.render(scene, camera);
-    scene.update && scene.update(timeStamp);
-    window.requestAnimationFrame(onAnimationFrameHandler);
+//     renderer.render(scene, camera);
+//     scene.update && scene.update(timeStamp);
+//     window.requestAnimationFrame(onAnimationFrameHandler);
+// =======
+// >>>>>>> main
 };
 window.requestAnimationFrame(onAnimationFrameHandler);
 

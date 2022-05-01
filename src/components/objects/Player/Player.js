@@ -1,6 +1,10 @@
 import * as THREE from 'three';
 import { Vector3 } from 'three';
+// <<<<<<< test
 import PLAYER from '../../textures/main_shooter.png';
+// =======
+// import { MainShooter, MainShooter1, Shooter } from '../../../assets';
+// >>>>>>> main
 
 class Player extends THREE.Group {
 
@@ -11,7 +15,18 @@ class Player extends THREE.Group {
         let { radius, playerPos, boundary } = playerStatus;
         
         // draw a triangle
+// <<<<<<< test
         this.initPlayer(playerStatus.scale);
+// =======
+//         const map = new THREE.TextureLoader().load( MainShooter1 );
+//         const material = new THREE.SpriteMaterial( { map: map, transparent: true } );
+
+//         const sprite = new THREE.Sprite( material );
+//         const player = sprite;
+//         player.material.depthTest = false;
+//         //const player = this.makeTriangle();
+//         console.log(player.position);
+// >>>>>>> main
 
         this.radius = radius;
         this.position.set(playerPos.x, playerPos.y, playerPos.z);
