@@ -1,6 +1,10 @@
 import * as THREE from 'three';
 import { Vector3 } from 'three';
-import { MainShooter, MainShooter1, Shooter } from '../../../assets';
+// <<<<<<< test
+import PLAYER from '../../textures/main_shooter.png';
+// =======
+// import { MainShooter, MainShooter1, Shooter } from '../../../assets';
+// >>>>>>> main
 
 class Player extends THREE.Group {
 
@@ -11,18 +15,22 @@ class Player extends THREE.Group {
         let { radius, playerPos, boundary } = playerStatus;
         
         // draw a triangle
-        const map = new THREE.TextureLoader().load( MainShooter1 );
-        const material = new THREE.SpriteMaterial( { map: map, transparent: true } );
+// <<<<<<< test
+        this.initPlayer(playerStatus.scale);
+// =======
+//         const map = new THREE.TextureLoader().load( MainShooter1 );
+//         const material = new THREE.SpriteMaterial( { map: map, transparent: true } );
 
-        const sprite = new THREE.Sprite( material );
-        const player = sprite;
-        player.material.depthTest = false;
-        //const player = this.makeTriangle();
-        console.log(player.position);
+//         const sprite = new THREE.Sprite( material );
+//         const player = sprite;
+//         player.material.depthTest = false;
+//         //const player = this.makeTriangle();
+//         console.log(player.position);
+// >>>>>>> main
 
         this.radius = radius;
         this.position.set(playerPos.x, playerPos.y, playerPos.z);
-        this.speed = 0.2;
+        this.speed = 8;
         this.currentState = 0; // -1 is right, +1 is left, 0 is stop
         this.health = 10;
 
@@ -30,23 +38,14 @@ class Player extends THREE.Group {
         this.netForces = new Vector3();
 
         this.boundary = boundary;
-        
-        this.add(player);
     }
 
-    makeTriangle () {
-        const vertices = [
-            0, 10, 0, // top
-            5, 0, 10, // right
-            -5, 0, 10 // left
-        ];
-
-        const faces = [2, 1, 0];
-        const geometry = new THREE.PolyhedronGeometry(vertices, faces, this.radius);
-        const material = new THREE.MeshNormalMaterial();
-        const triangle = new THREE.Mesh(geometry, material);
-
-        return triangle;
+    initPlayer (scale) {
+        let texture = new THREE.TextureLoader().load(PLAYER);
+        let material = new THREE.SpriteMaterial ( {map:texture} );
+        let sprite = new THREE.Sprite(material);
+        sprite.scale.set(scale, scale, 1);
+        this.add(sprite);
     }
 
     handLeftRightMovement() {
