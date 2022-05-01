@@ -2,13 +2,13 @@ import * as THREE from 'three';
 import { Color } from 'three';
 import { BasicLights } from 'lights';
 import { Player, Wall } from 'objects';
-import STAR from '../textures/star.png';
 import SPARK from '../textures/spark1.png';
-import { Vector3 } from 'three';
-import { Scene } from 'three';
+
+// modified effects from: https://github.com/mrdoob/three.js/blob/master/examples/webgl_buffergeometry_custom_attributes_particles.html
 
 const NUM_PARTICLES = 1000;
 const PARTICLE_RADIUS = 1.3;
+const PLAYER_SCALE = 50;
 
 class MainScene extends THREE.Scene {
     constructor (bounds) {
@@ -20,40 +20,16 @@ class MainScene extends THREE.Scene {
 
         this.playerStatus = {
             radius: 0.1, 
-            playerPos: new THREE.Vector3(0, 0, bounds.height / 2 - 30), 
-            boundary: {left: - bounds.width/2 + 30, right: bounds.width/2 - 30}
+            playerPos: new THREE.Vector3(0, 0, bounds.height / 2 - PLAYER_SCALE), 
+            boundary: {left: - bounds.width/2 + PLAYER_SCALE, right: bounds.width/2 - PLAYER_SCALE}, 
+            scale: PLAYER_SCALE
         }
 
         this.init();
     }
 
     init () {
-        // build background
-        // let points = []
-        // for (let i = 0; i < 1000; i ++) {
-        //     let star = new THREE.Vector3(
-        //         Math.random() * 600 - 300, 
-        //         0,
-        //         Math.random() * 600 - 300,
-        //     )
-        //     star.velocity = 0;
-        //     star.acceleration = 0.02;
-        //     points.push(star);
-        // }
-        // let starGeo = new THREE.BufferGeometry().setFromPoints( points );
-        // let sprite = new THREE.TextureLoader().load(STAR);
-        // let starMaterial = new THREE.PointsMaterial (
-        //     {
-        //         color: 0xaaaaa, 
-        //         size: Math.random(),
-        //         map: sprite
-        //     }
-        // );
-        // this.stars = new THREE.Points(starGeo, starMaterial);
-        // //this.animateStars();
-        // this.add(this.stars);
-
-        // attempt 2
+        // add background
         this.initStars();
 
         // add player
@@ -69,34 +45,22 @@ class MainScene extends THREE.Scene {
     returnVertexShader() {
         return `
         attribute float size;
-
         varying vec3 vColor;
-
         void main() {
-
             vColor = color;
-
             vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
-
             gl_PointSize = size * ( 300.0 / -mvPosition.z );
-
             gl_Position = projectionMatrix * mvPosition;
-
         }`
     }
 
     returnFragmentShader() {
         return `
         uniform sampler2D pointTexture;
-
         varying vec3 vColor;
-
         void main() {
-
             gl_FragColor = vec4( vColor, 1 );
-
             gl_FragColor = gl_FragColor * texture2D( pointTexture, gl_PointCoord );
-
         }
         `
     }
@@ -126,17 +90,15 @@ class MainScene extends THREE.Scene {
         const colors = [];
         const sizes = [];
 
-        const color = new THREE.Color();
-
         const n = 1000; const n2 = n/2;
 
         for ( let i = 0; i < NUM_PARTICLES; i ++ ) {
             const x = (Math.random() * n - n2) * PARTICLE_RADIUS;
-            const y = 0;
+            const y = (Math.random() * n - n2) * PARTICLE_RADIUS;
             const z = (Math.random() * n - n2) * PARTICLE_RADIUS;
 
             positions.push( x );
-            positions.push( y );
+            positions.push( 0 );
             positions.push( z );
 
             const vx = ( x / n ) + 0.5;

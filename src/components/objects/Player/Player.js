@@ -11,7 +11,7 @@ class Player extends THREE.Group {
         let { radius, playerPos, boundary } = playerStatus;
         
         // draw a triangle
-        this.initPlayer();
+        this.initPlayer(playerStatus.scale);
 
         this.radius = radius;
         this.position.set(playerPos.x, playerPos.y, playerPos.z);
@@ -25,11 +25,11 @@ class Player extends THREE.Group {
         this.boundary = boundary;
     }
 
-    initPlayer () {
+    initPlayer (scale) {
         let texture = new THREE.TextureLoader().load(PLAYER);
         let material = new THREE.SpriteMaterial ( {map:texture} );
         let sprite = new THREE.Sprite(material);
-        sprite.scale.set(30, 30, 1);
+        sprite.scale.set(scale, scale, 1);
         this.add(sprite);
     }
 
