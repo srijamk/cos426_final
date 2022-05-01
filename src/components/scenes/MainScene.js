@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { Color } from 'three';
 import { BasicLights } from 'lights';
-import { Player, Wall, Enemy } from 'objects';
+import { Player, Wall, Enemy, Bullets } from 'objects';
 import SPARK from '../textures/spark1.png';
 import { Vector3 } from 'three';
 
