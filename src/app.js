@@ -80,7 +80,6 @@ window.addEventListener("keydown", function (event) {
             window.requestAnimationFrame(onAnimationFrameHandler);
         } else if (!frozen) {
             // if user presses Space while playing game, freeze and display a pause screen
-            console.log("freeze!");
             frozen = true;
             scene.freeze();
             const geometry = new THREE.PlaneGeometry( window.outerWidth, window.outerHeight );
@@ -89,6 +88,8 @@ window.addEventListener("keydown", function (event) {
             plane.rotation.x = 90;
     
             const loader = new FontLoader();
+            
+            // Display a "Game Paused message"
             loader.load( CyberskyFont, function ( font ) {
             
                 const geometry = new TextGeometry( 'Game paused', {
@@ -112,9 +113,9 @@ window.addEventListener("keydown", function (event) {
                 txt.renderOrder = 1;
     
                 scene.add(txt);
-                console.log(scene);
             } );
 
+            // Display a "Press Space to resume" message.
             loader.load( CyberskyFont, function ( font ) {
         
                 const geometry = new TextGeometry( 'Press Space to resume.', {
@@ -140,13 +141,12 @@ window.addEventListener("keydown", function (event) {
                   scene.add(txt);
             } );
     
-            console.log(plane.position);
             scene.add(plane);
             renderer.render(scene, camera);
             scene.unfreeze();
         } else if (frozen) {
-            console.log("unfreeze");
             frozen = false;
+            // remove the pause elements from screen
             scene.remove(scene.children[scene.children.length - 1]);
             scene.remove(scene.children[scene.children.length - 1]);
             scene.remove(scene.children[scene.children.length - 1]);

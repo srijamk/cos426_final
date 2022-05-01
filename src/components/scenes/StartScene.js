@@ -38,6 +38,7 @@ class StartScene extends THREE.Scene {
             curScene.add(txt);
         } );
 
+        // load TextGeometry with instructions
         loader.load( CyberskyFont, function ( font ) {
         
             const geometry = new TextGeometry( 'Instructions. Press Space to start.', {
@@ -60,8 +61,6 @@ class StartScene extends THREE.Scene {
 
             curScene.add(txt);
         } );
-
-        //console.log(curScene);
 
     }
 
