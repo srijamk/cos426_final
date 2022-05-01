@@ -204,7 +204,7 @@ const onAnimationFrameHandler = (timeStamp) => {
 // <<<<<<< test
 
     if (keyActions['f'].isPressed) {
-        scene.updatePlayerShoot();
+        scene.updatePlayerShoot(timeStamp);
     }
 
 
