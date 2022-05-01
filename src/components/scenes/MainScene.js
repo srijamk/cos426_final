@@ -12,6 +12,8 @@ const PARTICLE_RADIUS = 1.3;
 const PLAYER_SCALE = 50;
 const ENEMY_SCALE = 50;
 const NUM_ENEMIES = 3;
+const ENEMY_SPEED = 100;
+const ENEMY_RADIUS = 1.3;
 
 class MainScene extends THREE.Scene {
     constructor (bounds) {
@@ -135,10 +137,20 @@ class MainScene extends THREE.Scene {
 
     initEnemies () {
         this.enemies = []
+        let bound = {
+            left: - this.bounds.width / 2 + 30,
+            right: this.bounds.width / 2 - 30,
+            up: - this.bounds.height / 2 + 30, 
+            down: 0
+        }
+        console.log(bound)
         for (let i = 0; i < NUM_ENEMIES; i++) {
             let status = {
                 scale: ENEMY_SCALE, 
-                pos: this.generateRandomPostion()
+                pos: this.generateRandomPostion(), 
+                speed: ENEMY_SPEED, 
+                boundary: bound, 
+                radius: ENEMY_RADIUS
             }
             let enemy = new Enemy(status);
             this.enemies.push(enemy);
@@ -201,6 +213,9 @@ class MainScene extends THREE.Scene {
     update (timeStamp) {
         this.player.update();
         this.animateStars(timeStamp);
+        this.enemies.forEach( e => {
+            e.update(this.player.position);
+        })
     }
 }
 
