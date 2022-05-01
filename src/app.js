@@ -47,8 +47,6 @@ const cameraHeight = cameraWidth / aspect;
 
 const bounds = {width: cameraWidth, height: cameraHeight};
 
-const scene = new MainScene(bounds);
-
 // Set up renderer, canvas, and minor CSS adjustments
 const renderer = new WebGLRenderer({ antialias: true, alpha: true });
 renderer.setPixelRatio(window.devicePixelRatio);
@@ -75,7 +73,7 @@ window.addEventListener("keydown", function (event) {
     if (event.keyCode == 32) {
         if (sceneNumber == 0) {
             sceneNumber++;
-            scene = new MainScene();
+            scene = new MainScene(bounds);
             camera = new THREE.OrthographicCamera(
                 cameraWidth / -2, cameraWidth / 2, cameraHeight / 2, cameraHeight / -2, 0, 1000
             );
@@ -89,10 +87,13 @@ window.addEventListener("keydown", function (event) {
             // if user presses Space while playing game, freeze and display a pause screen
             frozen = true;
             scene.freeze();
-            const geometry = new THREE.PlaneGeometry( window.outerWidth, window.outerHeight );
+            const geometry = new THREE.PlaneGeometry( window.outerWidth * 10, window.outerHeight * 10 );
             const material = new THREE.MeshBasicMaterial( {color: 0xffffff, side: THREE.DoubleSide, transparent: true, opacity: 0.3} );
             const plane = new THREE.Mesh( geometry, material );
-            plane.rotation.x = 90;
+            plane.position.copy(camera.position);
+            plane.rotation.copy(camera.rotation);
+            plane.translateZ(-10);
+            plane.renderOrder = 3;
     
             const loader = new FontLoader();
             
@@ -101,7 +102,7 @@ window.addEventListener("keydown", function (event) {
             
                 const geometry = new TextGeometry( 'Game paused', {
                     font: font,
-                    size: 2,
+                    size: 80,
                     height: 1,
                     curveSegments: 13,
                     bevelEnabled: false,
@@ -116,7 +117,6 @@ window.addEventListener("keydown", function (event) {
                 txt.position.copy(camera.position);
                 txt.rotation.copy(camera.rotation);
                 txt.translateZ(-10);
-                txt.translateY(2);
                 txt.renderOrder = 1;
     
                 scene.add(txt);
@@ -127,7 +127,7 @@ window.addEventListener("keydown", function (event) {
         
                 const geometry = new TextGeometry( 'Press Space to resume.', {
                     font: font,
-                    size: 0.5,
+                    size: 40,
                     height: 1,
                     curveSegments: 13,
                     bevelEnabled: false,
@@ -142,7 +142,7 @@ window.addEventListener("keydown", function (event) {
                   txt.position.copy(camera.position);
                   txt.rotation.copy(camera.rotation);
                   txt.translateZ(-10);
-                  txt.translateY(1);
+                  txt.translateY(-50);
                   txt.renderOrder = 2;
 
                   scene.add(txt);
