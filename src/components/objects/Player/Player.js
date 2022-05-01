@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { Vector3 } from 'three';
+import { MainShooter, Shooter } from '../../../assets';
 
 class Player extends THREE.Group {
 
@@ -10,7 +11,13 @@ class Player extends THREE.Group {
         let { radius, playerPos, boundary } = playerStatus;
         
         // draw a triangle
-        const player = this.makeTriangle();
+        const map = new THREE.TextureLoader().load( MainShooter );
+        const material = new THREE.SpriteMaterial( { map: map } );
+
+        const sprite = new THREE.Sprite( material );
+        //const player = this.makeTriangle();
+        const player = sprite;
+        console.log(player.position);
 
         this.radius = radius;
         this.position.set(playerPos.x, playerPos.y, playerPos.z);
