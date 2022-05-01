@@ -22,8 +22,8 @@ class Enemy extends THREE.Group {
         this.add(sprite);
     }
 
-    generateRandomPostion () {
-
+    update () {
+        
     }
 
 }

@@ -147,8 +147,7 @@ class MainScene extends THREE.Scene {
     // generate random position for enemies
     generateRandomPostion () {
         let x = - this.bounds.width * Math.random() + this.bounds.width / 2;
-        let z = - this.bounds.height * Math.random() + this.bounds.height / 2;
-        console.log(x, z)
+        let z = - this.bounds.height / 2 + Math.random() * this.bounds.height / 4;
         return new Vector3(x, 0, z);
     }
 
@@ -178,6 +177,10 @@ class MainScene extends THREE.Scene {
         if (this.status.isPaused) return;
 
         this.player.currentState = isRight;
+    }
+
+    updateEnemiesLocation () {
+        
     }
 
     updatePlayerShoot () {
