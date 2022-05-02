@@ -20,6 +20,8 @@ class Enemy extends THREE.Group {
 
         let {scale, pos, speed, boundary, radius} = status;
 
+        this.frozen = false;
+
         this.boundary = boundary;
 
         // init the enemy image
@@ -70,6 +72,14 @@ class Enemy extends THREE.Group {
         }
     }
 
+    freeze () {
+        this.frozen = true;
+    }
+
+    unfreeze () {
+        this.frozen = false;
+    }
+
     move (playerPos) {
         let curr = this.clock.elapsedTime;
         if ((curr - this.prevDirTime) > CHANGE_DIR_INT) {
@@ -83,12 +93,13 @@ class Enemy extends THREE.Group {
             
             this.prevDirTime = curr;
         }
-        let dt = this.clock.getDelta();
+        let dt = Math.min(this.clock.getDelta(), 0.1);
         this.netForces.copy(this.initialDir).multiplyScalar(dt * this.speed);
         this.position.add(this.netForces);
     }
 
-    update (playerPos) {
+    update (playerPos, timeStamp) {
+        if (this.frozen) return;
         this.move(playerPos);
         this.handleWallCollision();
     }

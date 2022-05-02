@@ -197,7 +197,6 @@ class MainScene extends THREE.Scene {
             up: - this.bounds.height / 2 + 30, 
             down: 0
         }
-        console.log(bound)
         for (let i = 0; i < NUM_ENEMIES; i++) {
             let status = {
                 scale: ENEMY_SCALE, 
@@ -235,11 +234,21 @@ class MainScene extends THREE.Scene {
     freeze() {
         // TODO: freeze all player and enemy activity
         this.status.isPaused = true;
+
+        this.player.freeze();
+        for (let e of this.enemies) {
+            e.freeze();
+        }
     }
 
     unfreeze() {
         // TODO: unfreeze all player and enemy activity
         this.status.isPaused = false;
+
+        this.player.unfreeze();
+        this.enemies.forEach (e => {
+            e.unfreeze();
+        })
     }
 
     resetPlayerStatus () {
@@ -281,7 +290,7 @@ class MainScene extends THREE.Scene {
         }
         this.animateStars(timeStamp);
         this.enemies.forEach( e => {
-            e.update(this.player.position);
+            e.update(this.player.position, timeStamp);
         })
     }
 }

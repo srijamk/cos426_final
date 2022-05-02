@@ -158,7 +158,7 @@ window.addEventListener("keydown", function (event) {
             } );
     
             scene.add(plane);
-            scene.unfreeze();
+            // scene.unfreeze();
         } else if (frozen) {
             frozen = false;
             // remove the pause elements from screen

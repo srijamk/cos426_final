@@ -40,6 +40,8 @@ class Player extends THREE.Group {
         this.netForces = new Vector3();
 
         this.boundary = boundary;
+
+        this.frozen = false;
     }
 
     initPlayer (scale) {
@@ -80,7 +82,16 @@ class Player extends THREE.Group {
         this.position.add(this.velocity);
     }
 
+    freeze () {
+        this.frozen = true;
+    }
+
+    unfreeze () {
+        this.frozen = false;
+    }
+
     update() {
+        if (this.frozen) return;
         // reset
         this.netForces = new Vector3();
         this.handLeftRightMovement();
