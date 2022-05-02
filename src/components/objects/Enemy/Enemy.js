@@ -76,7 +76,7 @@ class Enemy extends THREE.Group {
             if (prob < 0.5) {
                 this.initialDir = new THREE.Vector3(Math.random() * 2 - 1, 0, Math.random() * 2 - 1).normalize();
             } else {
-                this.initialDir = new THREE.Vector3(playerPos.x - this.position.x, 0, playerPos.z - this.position.z).normalize();
+                this.initialDir = new THREE.Vector3(playerPos.x - this.position.x, 0, 0).normalize();
             }
             
             this.prevDirTime = curr;
