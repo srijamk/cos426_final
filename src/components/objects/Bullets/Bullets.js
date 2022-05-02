@@ -50,7 +50,7 @@ class Bullets extends THREE.Group {
             }
         }
     }
-    update() {
+    update(enemies) {
         // if bullet is out of bounds then make clear
         if(this.bulletIsAlive) {
             if(this.particle.position.z > this.initPos.z - 11 && this.particle.position.z > this.initPos.z - 22) {

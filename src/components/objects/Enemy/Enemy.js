@@ -53,23 +53,23 @@ class Enemy extends THREE.Group {
     }
     
      explode() {
-    // this.remove(this.sprite);
-    let textureVid = document.createElement("video")
-    textureVid.src = '../../textures/explode.mp4'; // transform gif to mp4
-    textureVid.load();
-    textureVid.play();
+    this.remove(this.sprite);
+    // let textureVid = document.createElement("video")
+    // textureVid.src = '../../textures/explode.mp4'; // transform gif to mp4
+    // textureVid.load();
+    // textureVid.play();
 
-    let videoTexture = new THREE.VideoTexture(textureVid);
-    videoTexture.format = THREE.RGBFormat;
-    videoTexture.minFilter = THREE.NearestFilter;
-    videoTexture.maxFilter = THREE.NearestFilter;
-    videoTexture.generateMipmaps = false;
+    // let videoTexture = new THREE.VideoTexture(textureVid);
+    // videoTexture.format = THREE.RGBFormat;
+    // videoTexture.minFilter = THREE.NearestFilter;
+    // videoTexture.maxFilter = THREE.NearestFilter;
+    // videoTexture.generateMipmaps = false;
 
-    let material = new THREE.SpriteMaterial({ map: videoTexture });
-    let sprite = new THREE.Sprite(material);
-    let scale = 100;
-    this.sprite.scale.set(scale, scale, 1);
-    this.add(sprite);
+    // let material = new THREE.SpriteMaterial({ map: videoTexture });
+    // let sprite = new THREE.Sprite(material);
+    // let scale = 100;
+    // this.sprite.scale.set(scale, scale, 1);
+    // this.add(sprite);
   }
 
     handleWallCollision() {

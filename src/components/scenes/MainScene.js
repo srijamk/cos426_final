@@ -329,7 +329,7 @@ class MainScene extends THREE.Scene {
     updatePlayerShoot (timeStamp) {
         if (this.status.isPaused) return;
         // shooting delay
-        if (this.lastShootTime > 0 && ((timeStamp - this.lastShootTime) < 600)) {
+        if (this.lastShootTime > 0 && ((timeStamp - this.lastShootTime) < 500)) {
             return;
         } 
         this.lastShootTime = timeStamp;
