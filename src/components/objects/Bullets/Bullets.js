@@ -34,6 +34,22 @@ class Bullets extends THREE.Group {
         this.bulletIsAlive = true;
         this.particle.material.opacity = 1.0;
     }
+        distance(pos1, pos2) {
+        return ((pos1.x - pos2.x) ** 2 + (pos1.z - pos2.z) ** 2) ** 0.5;
+    }
+    handleBulletCollisions(enemies) {
+        // check if in radius of enemy:
+        for (let i = 0; i < enemies.length; i++) {
+            let dist = this.distance(enemies[i].position, this.particle.position);
+            if (dist < 25 && enemies[i].isAlive) {
+                this.bulletIsAlive = false;
+                enemies[i].isAlive = false;
+                this.particle.material.opacity = 0.0;
+                enemies[i].explode();
+                return enemies[i];
+            }
+        }
+    }
     update() {
         // if bullet is out of bounds then make clear
         if(this.bulletIsAlive) {
@@ -44,6 +60,8 @@ class Bullets extends THREE.Group {
                 this.bulletIsAlive = false;
                 this.particle.material.opacity = 0.0;
             }
+            let x = this.handleBulletCollisions(enemies);
+            if (x !== undefined) return x;
             this.particle.position.z -= 6;
         }
 
