@@ -347,7 +347,10 @@ class MainScene extends THREE.Scene {
     update (timeStamp) {
         this.player.update();
         for (let i = 0; i < this.bullets.length; i++) {
-            this.bullets[i].update();
+            let x = this.bullets[i].update(this.enemies);
+            if (x != undefined) {
+                this.remove(x);
+            }
         }
         this.animateStars(timeStamp);
         this.enemies.forEach( e => {
