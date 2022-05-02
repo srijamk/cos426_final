@@ -9,7 +9,7 @@ import PLAYER from '../../textures/main_shooter.png';
 class Player extends THREE.Group {
 
     // playerStatus: color, health
-    constructor (playerStatus) {
+    constructor (playerStatus, camera) {
         super();
 
         let { radius, playerPos, boundary } = playerStatus;
@@ -31,8 +31,10 @@ class Player extends THREE.Group {
         this.radius = radius;
         this.position.set(playerPos.x, playerPos.y, playerPos.z);
         this.speed = 8;
+        this.camera = camera;
         this.currentState = 0; // -1 is right, +1 is left, 0 is stop
-        this.health = 10;
+        this.max_health = 8;
+        this.health = 8;
 
         this.velocity = new Vector3();
         this.netForces = new Vector3();
@@ -46,6 +48,10 @@ class Player extends THREE.Group {
         let sprite = new THREE.Sprite(material);
         sprite.scale.set(scale, scale, 1);
         this.add(sprite);
+    }
+
+    removeOneHealth() {
+        this.health--;
     }
 
     handLeftRightMovement() {

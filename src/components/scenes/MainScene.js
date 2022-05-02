@@ -16,7 +16,7 @@ const ENEMY_SCALE = 50;
 const NUM_ENEMIES = 3;
 
 class MainScene extends THREE.Scene {
-    constructor (bounds) {
+    constructor (bounds, camera) {
         super();
 
         this.bounds = bounds;
@@ -26,6 +26,8 @@ class MainScene extends THREE.Scene {
         this.status = {
             isPaused: false
         }
+
+        this.camera = camera;
 
         this.playerStatus = {
             radius: 0.1, 
@@ -42,7 +44,23 @@ class MainScene extends THREE.Scene {
         this.initStars();
 
         // add player
-        this.player = new Player(this.playerStatus);
+        this.player = new Player(this.playerStatus, this.camera);
+
+        // show health bar
+        this.health_color = 0x00ff00;
+        this.health_geometry = new THREE.RingGeometry( 30, 40, 10, 8, 0, Math.PI );
+        this.health_material = new THREE.MeshBasicMaterial( { color: this.health_color, side: THREE.DoubleSide } );
+        this.health_mesh = new THREE.Mesh( this.health_geometry, this.health_material );
+        this.health_mesh.position.copy(this.camera.position);
+        this.health_mesh.rotation.copy(this.camera.rotation);
+        this.health_mesh.translateX(- 3 * window.innerWidth / 13);
+        this.health_mesh.translateY(2 * window.innerHeight / 9);
+        this.health_mesh.translateZ(-10);
+        this.health_mesh.renderOrder = 1;
+        this.health_mesh.needsUpdate = true;
+        this.health_mesh.material.needsUpdate = true;
+        this.health_mesh.material.color.needsUpdate = true;
+        this.add(this.health_mesh);
 
         // add enemies
         this.initEnemies();
@@ -67,6 +85,25 @@ class MainScene extends THREE.Scene {
             this.add(this.bullets[i].particle);
         }
         this.lastShootTime = -1;
+    }
+
+    resetHealth() {
+        // TODO: show HEALTH title in top-left with TextGeometry
+        // TODO: create ring
+        this.health_color = '#00ff00';
+    }
+
+    rgbToHex(r, g, b) {
+
+    }
+
+    removeOneHealth() {
+        // ring health bar inspired by: https://codepen.io/cjonasw/pen/RPbXrR
+        this.player.health--;
+        let greenComponent = this.player.health / this.player.max_health;
+        let redComponent = (this.player.max_health - this.player.health) / this.player.max_health;
+        this.health_color = new THREE.Color(redComponent, greenComponent, 0.0);
+        this.health_mesh.material.color.setRGB(redComponent, greenComponent, 0.0);
     }
 
     returnVertexShader() {
@@ -219,6 +256,7 @@ class MainScene extends THREE.Scene {
             if(!this.bullets[i].bulletIsAlive) {
                 var myAudio = new Audio(ShootSound);
                 myAudio.play();
+                this.removeOneHealth();
                 this.bullets[i].shootBullet(this.player.position);
                 break;
             }
