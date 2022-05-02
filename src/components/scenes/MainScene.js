@@ -13,7 +13,7 @@ const PARTICLE_RADIUS = 1.3;
 const PLAYER_SCALE = 50;
 const ENEMY_SCALE = 50;
 const NUM_ENEMIES = 3;
-const ENEMY_SPEED = 100;
+const ENEMY_SPEED = 90; // math.random() * 20 + 90 -> [90, 110]
 const ENEMY_RADIUS = 1.3;
 
 class MainScene extends THREE.Scene {
@@ -164,7 +164,7 @@ class MainScene extends THREE.Scene {
             let status = {
                 scale: ENEMY_SCALE, 
                 pos: this.generateRandomPostion(), 
-                speed: ENEMY_SPEED, 
+                speed: Math.random() * 30 + ENEMY_SPEED, 
                 boundary: bound, 
                 radius: ENEMY_RADIUS
             }

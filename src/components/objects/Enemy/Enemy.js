@@ -42,6 +42,8 @@ class Enemy extends THREE.Group {
 
     initEnemy (scale) {
         let texture = new THREE.TextureLoader().load(ENEMY);
+        texture.center.set(0.5, 0.5);
+        texture.repeat.set(1, -1);
         let material = new THREE.SpriteMaterial ( {map:texture} );
         let sprite = new THREE.Sprite(material);
         sprite.scale.set(scale, scale, 1);
