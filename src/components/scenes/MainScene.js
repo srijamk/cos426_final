@@ -4,6 +4,7 @@ import { BasicLights } from 'lights';
 import { Player, Wall, Enemy } from 'objects';
 import SPARK from '../textures/spark1.png';
 import { Vector3 } from 'three';
+import Bullets from '../objects/Bullets/Bullets';
 
 // modified effects from: https://github.com/mrdoob/three.js/blob/master/examples/webgl_buffergeometry_custom_attributes_particles.html
 
@@ -52,6 +53,21 @@ class MainScene extends THREE.Scene {
 
         // add everything
         this.add(lights, this.player);
+        
+        // add bullets
+        this.bullets = new Array(100);
+        let bulletStatus = {
+          initPos: this.player.position,
+          boundary: {
+            top: -this.bounds.height / 2 + 30,
+            bottom: this.bounds.height / 2 - 30,
+          },
+        };
+        for (let i = 0; i < this.bullets.length; i++) {
+            this.bullets[i] = new Bullets(bulletStatus);
+            this.add(this.bullets[i].particle);
+        }
+        this.lastShootTime = -1;
     }
 
     returnVertexShader() {
@@ -202,16 +218,26 @@ class MainScene extends THREE.Scene {
         this.player.currentState = isRight;
     }
 
-    updateEnemiesLocation () {
-        
-    }
-
-    updatePlayerShoot () {
+    updatePlayerShoot (timeStamp) {
         if (this.status.isPaused) return;
+        // shooting delay
+        if (this.lastShootTime > 0 && ((timeStamp - this.lastShootTime) < 600)) {
+            return;
+        } 
+        this.lastShootTime = timeStamp;
+        for(let i = 0; i < this.bullets.length; i++) {
+            if(!this.bullets[i].bulletIsAlive) {
+                this.bullets[i].shootBullet(this.player.position);
+                break;
+            }
+        }
     }
 
     update (timeStamp) {
         this.player.update();
+        for (let i = 0; i < this.bullets.length; i++) {
+            this.bullets[i].update();
+        }
         this.animateStars(timeStamp);
         this.enemies.forEach( e => {
             e.update(this.player.position);
