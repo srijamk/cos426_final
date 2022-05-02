@@ -4,3 +4,4 @@ export { default as Shooter } from './shooter.png';
 export { default as SelectSound } from './select_sound.mp3';
 export { default as SwitchSound } from './switch_difficulty_mode_sound.mp3';
 export { default as ShootSound } from './gun_shot_sound.mp3';
+export { default as LifeHeart } from './defender_heart_live.png';
