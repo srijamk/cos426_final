@@ -60,18 +60,16 @@ class MainScene extends THREE.Scene {
         this.health_mesh.rotation.copy(this.camera.rotation);
         this.health_mesh.translateX(- 3 * window.innerWidth / 13);
         this.health_mesh.translateY(2 * window.innerHeight / 9);
-        this.health_mesh.translateZ(-10);
         this.health_mesh.renderOrder = 1;
         this.health_mesh.needsUpdate = true;
         this.health_mesh.material.needsUpdate = true;
         this.health_mesh.material.color.needsUpdate = true;
         this.health_mesh.geometry.verticesNeedUpdate = true;
         this.health_mesh.geometry.elementsNeedUpdate = true;
-        //this.health_mesh.geometry.parameters.thetaStart.needsUpdate = true;
-        //this.health_mesh.geometry.parameters.thetaLength.needsUpdate = true;
+        this.health_mesh.geometry.parameters.needsUpdate = true;
 
         this.add(this.health_mesh);
-        this.health_bar_angle = Math.PI;
+        this.health_bar_angle = Math.PI * 2;
 
         // add enemies
         this.initEnemies();
@@ -180,9 +178,10 @@ class MainScene extends THREE.Scene {
         this.health_color = new THREE.Color(redComponent, greenComponent, 0.0);
         this.health_mesh.material.color.setRGB(redComponent, greenComponent, 0.0);
         if (this.player.health == 0) this.endGame();
-        this.health_bar_angle -= Math.PI / 8.0;
-        this.health_mesh.geometry.parameters.thetaLength = this.health_bar_angle;
-        console.log(this.health_mesh.geometry);
+        this.health_bar_angle -= Math.PI / 4.0;
+        this.health_mesh.geometry.dispose();
+        this.health_mesh.geometry = new THREE.RingGeometry(30, 40, 8, 8, 0, this.health_bar_angle);
+        console.log(this.health_mesh.geometry.parameters.thetaLength);
     }
 
     returnVertexShader() {
