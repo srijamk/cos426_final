@@ -338,7 +338,7 @@ class MainScene extends THREE.Scene {
     updatePlayerShoot (timeStamp) {
         if (this.status.isPaused) return;
         // shooting delay
-        if (this.lastShootTime > 0 && ((timeStamp - this.lastShootTime) < 600)) {
+        if (this.lastShootTime > 0 && ((timeStamp - this.lastShootTime) < 500)) {
             return;
         } 
         this.lastShootTime = timeStamp;
@@ -357,7 +357,10 @@ class MainScene extends THREE.Scene {
     update (timeStamp) {
         this.player.update();
         for (let i = 0; i < this.bullets.length; i++) {
-            this.bullets[i].update();
+            let x = this.bullets[i].update(this.enemies);
+            if (x != undefined) {
+                this.remove(x);
+            }
         }
         this.animateStars(timeStamp);
         this.enemies.forEach( e => {
