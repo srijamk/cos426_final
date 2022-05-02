@@ -98,18 +98,13 @@ window.addEventListener("keydown", function (event) {
     // if we're on start scene and user presses Space, move to game scene (MainScene)
     if (event.keyCode == 32) {
         // first check if game is over
-        if (lastChildName === "gameover") {
-            scene.unfreeze();
-            scene.resetEverything();
-            return;
-        }
 
         if (sceneNumber == 0) {
             var myAudio = new Audio(SelectSound);
             myAudio.play();
             sceneNumber++;
             scene = new DifficultyScene(new THREE.Euler().copy(camera.rotation));
-        } else if (sceneNumber == 1) {
+        } else if (sceneNumber == 1 || lastChildName === "gameover") {
             // https://mixkit.co/free-sound-effects/click/
             var myAudio = new Audio(SelectSound);
             myAudio.play();
