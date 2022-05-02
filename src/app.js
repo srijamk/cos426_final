@@ -13,7 +13,7 @@ import { SeedScene, MainScene, StartScene, DifficultyScene } from 'scenes';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
 import { StartFont, SpaceMissionFont, CyberskyFont } from './fonts';
-import { SelectSound, SwitchSound } from './assets';
+import { SelectSound, SwitchSound, ShootSound } from './assets';
 
 
 // <<<<<<< test
@@ -46,8 +46,6 @@ const cameraHeight = cameraWidth / aspect;
 // // camera.position.set(0, 50, 0);
 // // camera.up.set(0, 0, -1);
 // // camera.lookAt(0, 0, 0);
-// =======
-// >>>>>>> main
 
 const bounds = {width: cameraWidth, height: cameraHeight};
 

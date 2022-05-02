@@ -5,6 +5,7 @@ import { Player, Wall, Enemy } from 'objects';
 import SPARK from '../textures/spark1.png';
 import { Vector3 } from 'three';
 import Bullets from '../objects/Bullets/Bullets';
+import {ShootSound} from '../../assets';
 
 // modified effects from: https://github.com/mrdoob/three.js/blob/master/examples/webgl_buffergeometry_custom_attributes_particles.html
 
@@ -166,7 +167,7 @@ class MainScene extends THREE.Scene {
     generateRandomPostion () {
         let x = - this.bounds.width * Math.random() + this.bounds.width / 2;
         let z = - this.bounds.height * Math.random() + this.bounds.height / 2;
-        console.log(x, z)
+        console.log(x, z);
         return new Vector3(x, 0, z);
     }
 
@@ -216,6 +217,8 @@ class MainScene extends THREE.Scene {
         this.lastShootTime = timeStamp;
         for(let i = 0; i < this.bullets.length; i++) {
             if(!this.bullets[i].bulletIsAlive) {
+                var myAudio = new Audio(ShootSound);
+                myAudio.play();
                 this.bullets[i].shootBullet(this.player.position);
                 break;
             }
