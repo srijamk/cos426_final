@@ -53,7 +53,7 @@ class MainScene extends THREE.Scene {
 
         // show health bar
         this.health_color = 0x00ff00;
-        this.health_geometry = new THREE.RingGeometry( 30, 40, 10, 8, 0, Math.PI );
+        this.health_geometry = new THREE.RingGeometry( 30, 40, 8, 8);
         this.health_material = new THREE.MeshBasicMaterial( { color: this.health_color, side: THREE.DoubleSide } );
         this.health_mesh = new THREE.Mesh( this.health_geometry, this.health_material );
         this.health_mesh.position.copy(this.camera.position);
@@ -65,7 +65,13 @@ class MainScene extends THREE.Scene {
         this.health_mesh.needsUpdate = true;
         this.health_mesh.material.needsUpdate = true;
         this.health_mesh.material.color.needsUpdate = true;
+        this.health_mesh.geometry.verticesNeedUpdate = true;
+        this.health_mesh.geometry.elementsNeedUpdate = true;
+        //this.health_mesh.geometry.parameters.thetaStart.needsUpdate = true;
+        //this.health_mesh.geometry.parameters.thetaLength.needsUpdate = true;
+
         this.add(this.health_mesh);
+        this.health_bar_angle = Math.PI;
 
         // add enemies
         this.initEnemies();
@@ -174,6 +180,9 @@ class MainScene extends THREE.Scene {
         this.health_color = new THREE.Color(redComponent, greenComponent, 0.0);
         this.health_mesh.material.color.setRGB(redComponent, greenComponent, 0.0);
         if (this.player.health == 0) this.endGame();
+        this.health_bar_angle -= Math.PI / 8.0;
+        this.health_mesh.geometry.parameters.thetaLength = this.health_bar_angle;
+        console.log(this.health_mesh.geometry);
     }
 
     returnVertexShader() {
@@ -336,6 +345,7 @@ class MainScene extends THREE.Scene {
         for(let i = 0; i < this.bullets.length; i++) {
             if(!this.bullets[i].bulletIsAlive) {
                 var myAudio = new Audio(ShootSound);
+                myAudio.volume = 0.2;
                 myAudio.play();
                 this.removeOneHealth();
                 this.bullets[i].shootBullet(this.player.position);
