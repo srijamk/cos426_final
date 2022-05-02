@@ -73,7 +73,7 @@ class Enemy extends THREE.Group {
         if ((curr - this.prevDirTime) > CHANGE_DIR_INT) {
             // 60% random movement; 40% move in the direction of the player
             let prob = Math.random()
-            if (prob < 0.5) {
+            if (prob < 0.6) {
                 this.initialDir = new THREE.Vector3(Math.random() * 2 - 1, 0, Math.random() * 2 - 1).normalize();
             } else {
                 this.initialDir = new THREE.Vector3(playerPos.x - this.position.x, 0, 0).normalize();
