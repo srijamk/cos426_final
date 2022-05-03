@@ -1,7 +1,18 @@
 import * as THREE from 'three';
 import { Vector3 } from 'three';
 import ENEMY from '../../textures/main_shooter_1.png';
-
+import EXPLODE1 from "../../textures/Circle_explosion/Circle_explosion1.png";
+import EXPLODE2 from "../../textures/Circle_explosion/Circle_explosion2.png";
+import EXPLODE3 from "../../textures/Circle_explosion/Circle_explosion3.png";
+import EXPLODE4 from "../../textures/Circle_explosion/Circle_explosion4.png";
+import EXPLODE5 from "../../textures/Circle_explosion/Circle_explosion5.png";
+import EXPLODE6 from "../../textures/Circle_explosion/Circle_explosion6.png";
+import EXPLODE7 from "../../textures/Circle_explosion/Circle_explosion7.png";
+import EXPLODE8 from "../../textures/Circle_explosion/Circle_explosion8.png";
+import EXPLODE9 from "../../textures/Circle_explosion/Circle_explosion9.png";
+import EXPLODE10 from "../../textures/Circle_explosion/Circle_explosion10.png";
+// import EXPLODE from "../../textures/explode.mp4";
+import { Explode2 } from "../../textures";
 /**
  * status should have:
  *  1. scale of the sprite
@@ -33,6 +44,7 @@ class Enemy extends THREE.Group {
         this.velocity = new Vector3();
         this.netForces = new Vector3();
 
+// <<<<<<< test
         if (this.movementStyle === "random") {
             this.clock = new THREE.Clock();
             this.prevDirTime = this.clock.startTime;
@@ -45,6 +57,18 @@ class Enemy extends THREE.Group {
         } else {
             this.initialDir = new THREE.Vector3();
         }
+// =======
+//         this.position.set(pos.x, pos.y, pos.z);
+
+//         this.radius = radius;
+
+//         this.clock = new THREE.Clock();
+        
+        this.isAlive = true;
+        
+//         this.prevDirTime = this.clock.startTime;
+//         this.initialDir = new THREE.Vector3(Math.random() * 3 - 1, 0, Math.random() * 3 - 1).normalize();
+// >>>>>>> main
     }
 
     initEnemy (scale) {
@@ -56,6 +80,50 @@ class Enemy extends THREE.Group {
         sprite.scale.set(scale, scale, 1);
         this.add(sprite);
     }
+    
+     explode() {
+        // function wait(ms){
+        // var start = new Date().getTime();
+        // var end = start;
+        //     while(end < start + ms) {
+        //         end = new Date().getTime();
+        //     }
+        // }
+        // let scale = 50;
+        // this.remove(this.sprite);
+        // let texture = new THREE.TextureLoader().load(EXPLODE1);
+        // texture.center.set(0.5, 0.5);
+        // texture.repeat.set(1, -1);
+        // let material = new THREE.SpriteMaterial({ map: texture });
+        // let sprite = new THREE.Sprite(material);
+        // sprite.scale.set(scale, scale, 1);
+        // this.add(sprite);
+        // wait(3000);
+        // this.remove(this.sprite);
+        // texture = new THREE.TextureLoader().load(EXPLODE2);
+        // texture.center.set(0.5, 0.5);
+        // texture.repeat.set(1, -1);
+        // material = new THREE.SpriteMaterial({ map: texture });
+        // sprite = new THREE.Sprite(material);
+        // sprite.scale.set(scale, scale, 1);
+        // this.add(sprite);
+        let textureVid = document.createElement("video")
+        textureVid.src = Explode2; // transform gif to mp4
+        textureVid.load();
+        textureVid.play();
+
+        let videoTexture = new THREE.VideoTexture(textureVid);
+        videoTexture.format = THREE.RGBFormat;
+        videoTexture.minFilter = THREE.NearestFilter;
+        videoTexture.maxFilter = THREE.NearestFilter;
+        videoTexture.generateMipmaps = false;
+
+        let material = new THREE.SpriteMaterial({ map: videoTexture });
+        let sprite = new THREE.Sprite(material);
+        let scaleVal = 100;
+        sprite.scale.set(scaleVal, scaleVal, 1);
+        this.add(sprite);
+  }
 
     handleWallCollision() {
         if (this.position.x - this.radius < this.boundary.left) {

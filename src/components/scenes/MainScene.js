@@ -6,6 +6,9 @@ import SPARK from '../textures/spark1.png';
 import { Vector3 } from 'three';
 import Bullets from '../objects/Bullets/Bullets';
 import {ShootSound} from '../../assets';
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
+import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
+import { StartFont, SpaceMissionFont, CyberskyFont } from '../../fonts';
 
 // modified effects from: https://github.com/mrdoob/three.js/blob/master/examples/webgl_buffergeometry_custom_attributes_particles.html
 
@@ -81,19 +84,23 @@ class MainScene extends THREE.Scene {
 
         // show health bar
         this.health_color = 0x00ff00;
-        this.health_geometry = new THREE.RingGeometry( 30, 40, 10, 8, 0, Math.PI );
+        this.health_geometry = new THREE.RingGeometry( 30, 40, 8, 8);
         this.health_material = new THREE.MeshBasicMaterial( { color: this.health_color, side: THREE.DoubleSide } );
         this.health_mesh = new THREE.Mesh( this.health_geometry, this.health_material );
         this.health_mesh.position.copy(this.camera.position);
         this.health_mesh.rotation.copy(this.camera.rotation);
         this.health_mesh.translateX(- 3 * window.innerWidth / 13);
         this.health_mesh.translateY(2 * window.innerHeight / 9);
-        this.health_mesh.translateZ(-10);
         this.health_mesh.renderOrder = 1;
         this.health_mesh.needsUpdate = true;
         this.health_mesh.material.needsUpdate = true;
         this.health_mesh.material.color.needsUpdate = true;
+        this.health_mesh.geometry.verticesNeedUpdate = true;
+        this.health_mesh.geometry.elementsNeedUpdate = true;
+        this.health_mesh.geometry.parameters.needsUpdate = true;
+
         this.add(this.health_mesh);
+        this.health_bar_angle = Math.PI * 2;
 
         // add enemies
         this.initEnemies();
@@ -126,8 +133,72 @@ class MainScene extends THREE.Scene {
         this.health_color = '#00ff00';
     }
 
-    rgbToHex(r, g, b) {
+    endGame() {
+        let curScene = this;
+        this.freeze();
+        const geometry = new THREE.PlaneGeometry( window.outerWidth * 10, window.outerHeight * 10 );
+        const material = new THREE.MeshBasicMaterial( {color: 0xffffff, side: THREE.DoubleSide, transparent: true, opacity: 0.3} );
+        const plane = new THREE.Mesh( geometry, material );
+        plane.position.copy(this.camera.position);
+        plane.rotation.copy(this.camera.rotation);
+        plane.translateZ(-10);
+        plane.renderOrder = 3;
 
+        const loader = new FontLoader();
+        
+        // Display a "Game Paused message"
+        loader.load( CyberskyFont, function ( font ) {
+        
+            const geometry = new TextGeometry( 'Game Over', {
+                font: font,
+                size: 80,
+                height: 1,
+                curveSegments: 13,
+                bevelEnabled: false,
+            } );
+            geometry.center();
+
+            var material = new THREE.MeshBasicMaterial({
+                color: 0xff0000,
+              });
+              
+            var txt = new THREE.Mesh(geometry, material);
+            txt.position.copy(curScene.camera.position);
+            txt.rotation.copy(curScene.camera.rotation);
+            txt.translateZ(-10);
+            txt.renderOrder = 1;
+
+            curScene.add(txt);
+        } );
+
+        // Display a "Press Space to resume" message.
+        loader.load( CyberskyFont, function ( font ) {
+    
+            const geometry = new TextGeometry( 'Press Space to play again.\nPress Esc to return home.', {
+                font: font,
+                size: 30,
+                height: 1,
+                curveSegments: 13,
+                bevelEnabled: false,
+            } );
+            geometry.center();
+
+            var material = new THREE.MeshBasicMaterial({
+                color: 0x000000,
+              });
+              
+              var txt = new THREE.Mesh(geometry, material);
+              txt.position.copy(curScene.camera.position);
+              txt.rotation.copy(curScene.camera.rotation);
+              txt.translateZ(-10);
+              txt.translateY(-60);
+              txt.renderOrder = 2;
+
+              txt.name = "gameover";
+              curScene.add(txt);
+        } );
+
+        this.add(plane);
     }
 
     removeOneHealth() {
@@ -137,6 +208,11 @@ class MainScene extends THREE.Scene {
         let redComponent = (this.player.max_health - this.player.health) / this.player.max_health;
         this.health_color = new THREE.Color(redComponent, greenComponent, 0.0);
         this.health_mesh.material.color.setRGB(redComponent, greenComponent, 0.0);
+        if (this.player.health == 0) this.endGame();
+        this.health_bar_angle -= Math.PI / 4.0;
+        this.health_mesh.geometry.dispose();
+        this.health_mesh.geometry = new THREE.RingGeometry(30, 40, 8, 8, 0, this.health_bar_angle);
+        console.log(this.health_mesh.geometry.parameters.thetaLength);
     }
 
     returnVertexShader() {
@@ -256,6 +332,8 @@ class MainScene extends THREE.Scene {
     }
 
     resetEverything () {
+        this.resetHealth();
+        this.resetPlayerStatus();
     }
 
     freeze() {
@@ -295,13 +373,14 @@ class MainScene extends THREE.Scene {
     updatePlayerShoot (timeStamp) {
         if (this.status.isPaused) return;
         // shooting delay
-        if (this.lastShootTime > 0 && ((timeStamp - this.lastShootTime) < 600)) {
+        if (this.lastShootTime > 0 && ((timeStamp - this.lastShootTime) < 500)) {
             return;
         } 
         this.lastShootTime = timeStamp;
         for(let i = 0; i < this.bullets.length; i++) {
             if(!this.bullets[i].bulletIsAlive) {
                 var myAudio = new Audio(ShootSound);
+                myAudio.volume = 0.2;
                 myAudio.play();
                 this.removeOneHealth();
                 this.bullets[i].shootBullet(this.player.position);
@@ -313,7 +392,10 @@ class MainScene extends THREE.Scene {
     update (timeStamp) {
         this.player.update();
         for (let i = 0; i < this.bullets.length; i++) {
-            this.bullets[i].update();
+            let x = this.bullets[i].update(this.enemies);
+            if (x != undefined) {
+                this.remove(x);
+            }
         }
         this.animateStars(timeStamp);
         this.enemies.forEach( e => {

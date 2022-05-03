@@ -26,6 +26,7 @@ import { LifeHeart } from './assets';
 let camera = new PerspectiveCamera();
 let frozen = false;
 //camera.position.set(0, 50, 0);
+console.log("rotation: ", camera.rotation);
 camera.position.set(0, 300, 400);
 camera.up.set(0, 0, -10);
 camera.lookAt(0, 0, 0);
@@ -34,6 +35,7 @@ camera.lookAt(0, 0, 0);
 let scene = new StartScene(camera.rotation);
 let sceneNumber = 0;
 let level = 0; // defaults to Easy
+let gameover = false;
 
 // Set up Top-down camera
 // >>>>>>> main
@@ -73,14 +75,36 @@ const keyActions = {
 // https://stackoverflow.com/questions/4416505/how-to-take-keyboard-input-in-javascript
 window.addEventListener("keydown", function (event) {
 
+    let lastChildName = scene.children[scene.children.length - 1].name;
+    // if game over, return to start scene
+    if (event.keyCode == 27) {
+      if (lastChildName === "gameover") {
+        camera = new PerspectiveCamera();
+        frozen = false;
+        //camera.position.set(0, 50, 0);
+        camera.position.set(0, 300, 400);
+        camera.up.set(0, 0, -10);
+        camera.lookAt(0, 0, 0);
+        
+        // initialize start scene
+        windowResizeHandler();
+        scene = new StartScene(camera.rotation);
+        sceneNumber = 0;
+        level = 0; // defaults to Easy
+        gameover = false; 
+        return;
+      }
+    }
     // if we're on start scene and user presses Space, move to game scene (MainScene)
     if (event.keyCode == 32) {
+        // first check if game is over
+
         if (sceneNumber == 0) {
             var myAudio = new Audio(SelectSound);
             myAudio.play();
             sceneNumber++;
             scene = new DifficultyScene(new THREE.Euler().copy(camera.rotation));
-        } else if (sceneNumber == 1) {
+        } else if (sceneNumber == 1 || lastChildName === "gameover") {
             // https://mixkit.co/free-sound-effects/click/
             var myAudio = new Audio(SelectSound);
             myAudio.play();
