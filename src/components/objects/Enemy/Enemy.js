@@ -14,6 +14,7 @@ import EXPLODE9 from "../../textures/Circle_explosion/Circle_explosion9.png";
 import EXPLODE10 from "../../textures/Circle_explosion/Circle_explosion10.png";
 // import EXPLODE from "../../textures/explode.mp4";
 import { ExplodeGif } from "../../textures";
+import { FirstExplosion } from "../../textures";
 /**
  * status should have:
  *  1. scale of the sprite
@@ -71,6 +72,14 @@ class Enemy extends THREE.Group {
 //         this.initialDir = new THREE.Vector3(Math.random() * 3 - 1, 0, Math.random() * 3 - 1).normalize();
 // >>>>>>> main
     }
+    sleep(milliseconds) {
+        const date = Date.now();
+        let currentDate = null;
+        do {
+          currentDate = Date.now();
+        } while (currentDate - date < milliseconds);
+      }
+      
 
     initEnemy (scale) {
         let texture = new THREE.TextureLoader().load(ENEMY);
@@ -79,48 +88,21 @@ class Enemy extends THREE.Group {
         let material = new THREE.SpriteMaterial ( {map:texture} );
         let sprite = new THREE.Sprite(material);
         sprite.scale.set(scale, scale, 1);
+        sprite.material.needsUpdate = true;
+        sprite.material.map.needsUpdate = true;
+        sprite.name = "Textmapupdate";
         this.add(sprite);
         this.bullets = new Array(10);
     }
     
-     explode() {
-        // function wait(ms){
-        // var start = new Date().getTime();
-        // var end = start;
-        //     while(end < start + ms) {
-        //         end = new Date().getTime();
-        //     }
-        // }
-        // let scale = 50;
-        // this.remove(this.sprite);
-        // let texture = new THREE.TextureLoader().load(EXPLODE1);
-        // texture.center.set(0.5, 0.5);
-        // texture.repeat.set(1, -1);
-        // let material = new THREE.SpriteMaterial({ map: texture });
-        // let sprite = new THREE.Sprite(material);
-        // sprite.scale.set(scale, scale, 1);
-        // this.add(sprite);
-        // wait(3000);
-        // this.remove(this.sprite);
-        // texture = new THREE.TextureLoader().load(EXPLODE2);
-        // texture.center.set(0.5, 0.5);
-        // texture.repeat.set(1, -1);
-        // material = new THREE.SpriteMaterial({ map: texture });
-        // sprite = new THREE.Sprite(material);
-        // sprite.scale.set(scale, scale, 1);
-        // this.add(sprite);
-        let videoTexture = new THREE.TextureLoader().load(ExplodeGif);
-        videoTexture.center.set(0.5, 0.5);
-        videoTexture.repeat.set(1, -1);
-        videoTexture.minFilter = THREE.NearestFilter;
-
-        let material = new THREE.SpriteMaterial({ map: videoTexture });
-        let sprite = new THREE.Sprite(material);
-        let scaleVal = 100;
-        sprite.scale.set(scaleVal, scaleVal, 1);
-        this.add(sprite);
-        console.log(sprite.position);
-  }
+    explode() {
+        /*
+        let newTexture = new THREE.TextureLoader().load(FirstExplosion);
+        this.children[0].material.map.dispose();
+        this.children[0].material.map = newTexture;
+        console.log("sleeping");
+        this.sleep(5000);*/
+    }
 
     handleWallCollision() {
         if (this.position.x - this.radius < this.boundary.left) {

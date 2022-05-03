@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { Vector3 } from "three";
 import { Player } from "objects";
+import { FirstExplosion } from "../../textures";
+import { MainShooter1 } from "../../../assets";
 /**
  * status should include:
  *  position
@@ -41,6 +43,15 @@ class Bullets extends THREE.Group {
         return ((pos1.x - pos2.x) ** 2 + (pos1.z - pos2.z) ** 2) ** 0.5;
     }
 
+    sleep(milliseconds) {
+        const date = Date.now();
+        let currentDate = null;
+        do {
+          currentDate = Date.now();
+        } while (currentDate - date < milliseconds);
+      }
+      
+
     handleBulletCollisions(enemies) {
         // check if in radius of enemy:
         for (let i = 0; i < enemies.length; i++) {
@@ -48,8 +59,8 @@ class Bullets extends THREE.Group {
             if (dist < 25 && enemies[i].isAlive) {
                 this.bulletIsAlive = false;
                 enemies[i].isAlive = false;
-                this.particle.material.opacity = 0.0;
                 enemies[i].explode();
+                this.particle.material.opacity = 0.0;
                 return enemies[i];
             }
         }

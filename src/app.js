@@ -14,7 +14,6 @@ import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
 import { StartFont, SpaceMissionFont, CyberskyFont } from './fonts';
 import { SelectSound, SwitchSound, ShootSound } from './assets';
-import { LifeHeart } from './assets';
 
 
 // <<<<<<< test
