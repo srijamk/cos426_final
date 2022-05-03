@@ -17,11 +17,42 @@ const NUM_ENEMIES = 3;
 const ENEMY_SPEED = 90; // math.random() * 20 + 90 -> [90, 110]
 const ENEMY_RADIUS = 1.3;
 
+const enemy_info = [
+    {
+        "level": 0, 
+        "init_enemy_num": 3,
+        "max_enemy_num": 5,
+        "enemy_speed": 0, 
+        "enemy_movement": "static", 
+        "enemy_scale": ENEMY_SCALE, 
+        "enemy_radius": ENEMY_RADIUS
+    }, 
+    {
+        "level": 1, 
+        "init_enemy_num": 3,
+        "max_enemy_num": 7,
+        "enemy_speed": 100, 
+        "enemy_movement": "horizontal",
+        "enemy_scale": ENEMY_SCALE, 
+        "enemy_radius": ENEMY_RADIUS
+    }, 
+    {
+        "level": 2,
+        "init_enemy_num": 3,
+        "max_enemy_num": 7,
+        "enemy_speed": 110, 
+        "enemy_movement": "random",
+        "enemy_scale": ENEMY_SCALE, 
+        "enemy_radius": ENEMY_RADIUS
+    }
+]
+
 class MainScene extends THREE.Scene {
-    constructor (bounds, camera) {
+    constructor (bounds, camera, level) {
         super();
 
         this.bounds = bounds;
+        this.level = level;
 
         this.background = new Color(0x000000);
 
@@ -197,14 +228,10 @@ class MainScene extends THREE.Scene {
             up: - this.bounds.height / 2 + 30, 
             down: 0
         }
+        let status = enemy_info[this.level];
+        status.boundary = bound;
         for (let i = 0; i < NUM_ENEMIES; i++) {
-            let status = {
-                scale: ENEMY_SCALE, 
-                pos: this.generateRandomPostion(), 
-                speed: Math.random() * 30 + ENEMY_SPEED, 
-                boundary: bound, 
-                radius: ENEMY_RADIUS
-            }
+            status.pos = this.generateRandomPostion();
             let enemy = new Enemy(status);
             this.enemies.push(enemy);
             this.add(enemy);
