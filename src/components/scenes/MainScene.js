@@ -105,6 +105,7 @@ class MainScene extends THREE.Scene {
         // add enemies
         this.initEnemies();
         this.initEnemyBullets();
+
         // add lights
         const lights = new BasicLights();
 
@@ -125,6 +126,7 @@ class MainScene extends THREE.Scene {
             this.add(this.bullets[i].particle);
         }
         this.lastShootTime = -1;
+        this.win = false;
     }
     // add bullets for each enemy
     initEnemyBullets() {
@@ -166,11 +168,14 @@ class MainScene extends THREE.Scene {
         plane.renderOrder = 3;
 
         const loader = new FontLoader();
-        
+        let text = 'Game Over'
+        if (this.win) {
+            text = 'Victory'
+        }
         // Display a "Game Paused message"
         loader.load( CyberskyFont, function ( font ) {
-        
-            const geometry = new TextGeometry( 'Game Over', {
+            
+            const geometry = new TextGeometry( text, {
                 font: font,
                 size: 80,
                 height: 1,
@@ -428,7 +433,11 @@ class MainScene extends THREE.Scene {
             }
         }
         this.animateStars(timeStamp);
+        let deadEnemies = 0;
         this.enemies.forEach( e => {
+            if (!e.isAlive) {
+                deadEnemies++;
+            }
             e.update(this.player.position, timeStamp);
             if (!e.bullets[0].bulletIsAlive && e.isAlive) {
                 this.updateEnemyShoot(e, e.bullets[0], timeStamp);
@@ -444,6 +453,10 @@ class MainScene extends THREE.Scene {
             //     e.bullets[i].enemyUpdate(); 
             // }
         })
+        if (deadEnemies == NUM_ENEMIES) {
+            this.win = true;
+            this.endGame();
+        }
     }
 }
 
