@@ -74,7 +74,10 @@ const keyActions = {
 // https://stackoverflow.com/questions/4416505/how-to-take-keyboard-input-in-javascript
 window.addEventListener("keydown", function (event) {
 
-    let lastChildName = scene.children[scene.children.length - 1].name;
+    let lastChildName = "";
+    if (scene.children.length > 0) {
+        lastChildName = scene.children[scene.children.length - 1].name;
+    }
     // if game over, return to start scene
     if (event.keyCode == 27) {
       if (lastChildName === "gameover") {

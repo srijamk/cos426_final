@@ -12,8 +12,9 @@ import EXPLODE7 from "../../textures/Circle_explosion/Circle_explosion7.png";
 import EXPLODE8 from "../../textures/Circle_explosion/Circle_explosion8.png";
 import EXPLODE9 from "../../textures/Circle_explosion/Circle_explosion9.png";
 import EXPLODE10 from "../../textures/Circle_explosion/Circle_explosion10.png";
+import { MainShooter1 } from '../../textures';
 // import EXPLODE from "../../textures/explode.mp4";
-// import { ExplodeGif } from "../../textures";
+import { Explode } from "../../textures";
 /**
  * status should have:
  *  1. scale of the sprite
@@ -41,9 +42,16 @@ class Enemy extends THREE.Group {
         this.position.set(status.pos.x, status.pos.y, status.pos.z);
         this.radius = 0;
         this.movementStyle = status.enemy_movement;
+        this.exploding = false;
+        this.explodingStartTime = undefined;
 
         this.velocity = new Vector3();
         this.netForces = new Vector3();
+        let texture = new THREE.TextureLoader().load(ENEMY);
+        texture.center.set(0.5, 0.5);
+        texture.repeat.set(1, -1);
+        let material = new THREE.SpriteMaterial ( {map:texture} );
+        this.sprite = new THREE.Sprite(material);
 
 // <<<<<<< test
         if (this.movementStyle === "random") {
@@ -71,36 +79,74 @@ class Enemy extends THREE.Group {
 //         this.initialDir = new THREE.Vector3(Math.random() * 3 - 1, 0, Math.random() * 3 - 1).normalize();
 // >>>>>>> main
     }
-    sleep(milliseconds) {
-        const date = Date.now();
-        let currentDate = null;
-        do {
-          currentDate = Date.now();
-        } while (currentDate - date < milliseconds);
-      }
-      
 
     initEnemy (scale) {
         let texture = new THREE.TextureLoader().load(ENEMY);
         texture.center.set(0.5, 0.5);
         texture.repeat.set(1, -1);
         let material = new THREE.SpriteMaterial ( {map:texture} );
-        let sprite = new THREE.Sprite(material);
-        sprite.scale.set(scale, scale, 1);
-        sprite.material.needsUpdate = true;
-        sprite.material.map.needsUpdate = true;
-        sprite.name = "Textmapupdate";
-        this.add(sprite);
+        this.sprite = new THREE.Sprite(material);
+        this.sprite.scale.set(scale, scale, 1);
+        this.sprite.material.needsUpdate = true;
+        this.sprite.material.map.needsUpdate = true;
+        this.sprite.name = "Textmapupdate";
+        this.add(this.sprite);
         this.bullets = new Array(10);
+    }
+
+    explodeWork = (curTime) => {
+        if (!this.explodingStartTime) {
+            this.explodingStartTime = curTime;
+        }
+        let explodeAnimations = [EXPLODE1, EXPLODE2, EXPLODE3, EXPLODE4, EXPLODE5, EXPLODE6, EXPLODE7, EXPLODE8, EXPLODE9, EXPLODE10] 
+        let elapsedTime = curTime - this.explodingStartTime;
+        if (elapsedTime >= 300) {
+            this.exploding = false;
+            this.explodingStartTime = undefined;
+            this.children[0].material.opacity = 0.0;
+            return;
+        }
+        let i = Math.floor(elapsedTime / 30);
+        new THREE.TextureLoader().load(
+            explodeAnimations[i],
+            newTexture => {
+                //Update Texture
+        this.children[0].material.map.dispose();
+        this.children[0].material.map = newTexture;
+        this.children[0].material.needsUpdate = true;
+        this.children[0].material.map.needsUpdate = true;
+            }
+            );
     }
     
     explode() {
+        //console.log("exploding");
+        //window.requestAnimationFrame(this.explodeWork);
+        this.exploding = true;
+        //return this;
         /*
-        let newTexture = new THREE.TextureLoader().load(FirstExplosion);
-        this.children[0].material.map.dispose();
-        this.children[0].material.map = newTexture;
-        console.log("sleeping");
-        this.sleep(5000);*/
+        let startTime = Math.floor(Date.now() / 1000);
+        console.log(startTime);
+        //let newTexture = new THREE.TextureLoader().load(MainShooter1);
+        let explodeAnimations = [EXPLODE1, EXPLODE2, EXPLODE3, EXPLODE4, EXPLODE5, EXPLODE6, EXPLODE7, EXPLODE8, EXPLODE9, EXPLODE10]
+        let curTime = Math.floor(Date.now() / 1000);
+        console.log("still outside loop");
+        while (curTime < startTime + 10) {
+            curTime = Math.floor(Date.now() / 1000);
+            let i = Math.floor((curTime - startTime));
+            console.log(i);
+            new THREE.TextureLoader().load(
+                explodeAnimations[i],
+                newTexture => {
+                    //Update Texture
+            this.children[0].material.map.dispose();
+            this.children[0].material.map = newTexture;
+            this.children[0].material.needsUpdate = true;
+            this.children[0].material.map.needsUpdate = true;
+                }
+                );
+        }*/
+
     }
 
     handleWallCollision() {
@@ -170,7 +216,11 @@ class Enemy extends THREE.Group {
         if (this.frozen) return;
         this.move(playerPos);
         this.handleWallCollision();
-
+        if (this.exploding) {
+            console.log("calling explodeWork");
+            this.explodeWork(timeStamp);
+            console.log(timeStamp);
+        }
     }
 
 }
