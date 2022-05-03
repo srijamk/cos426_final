@@ -23,7 +23,7 @@ const ENEMY_RADIUS = 1.3;
 const enemy_info = [
     {
         "level": 0, 
-        "init_enemy_num": 3,
+        "init_enemy_num": 2,
         "max_enemy_num": 5,
         "enemy_speed": 0, 
         "enemy_movement": "static", 
@@ -319,6 +319,16 @@ class MainScene extends THREE.Scene {
 
     initEnemies () {
         this.enemies = []
+        this.totalEnemiesNum = enemy_info[this.level].init_enemy_num;
+        for (let i = 0; i < enemy_info[this.level].init_enemy_num; i++) {
+            let enemy = this.spawnEnemy();
+            this.enemies.push(enemy);
+            this.add(enemy);
+        }
+        this.lastEnemySpawnTime = 1;
+    }
+
+    spawnEnemy () {
         let bound = {
             left: - this.bounds.width / 2 + 30,
             right: this.bounds.width / 2 - 30,
@@ -327,12 +337,9 @@ class MainScene extends THREE.Scene {
         }
         let status = enemy_info[this.level];
         status.boundary = bound;
-        for (let i = 0; i < NUM_ENEMIES; i++) {
-            status.pos = this.generateRandomPostion();
-            let enemy = new Enemy(status);
-            this.enemies.push(enemy);
-            this.add(enemy);
-        }
+        status.pos = this.generateRandomPostion();
+        let enemy = new Enemy(status);
+        return enemy;
     }
 
     // generate random position for enemies
@@ -412,7 +419,52 @@ class MainScene extends THREE.Scene {
 
     // 1. if there's no enemies in the scene, then spawn new enemies
     // 2. after certain amount of time, spawn new enemies, until max is reached
-    checkEnemyUpgrades () {
+    checkEnemyUpgrades (timeStamp) {
+        if (this.totalEnemiesNum >= enemy_info[this.level].max_enemy_num)
+            return;
+        
+        if (this.lastEnemySpawnTime > 0 && ((timeStamp - this.lastEnemySpawnTime) < 10000) && this.totalEnemiesNum > 0)
+            return;
+        
+        let spawn_prob = 0.2; // will spawn with prob 0.2
+        let num_enemies_spawn, final_spawn_num;
+        if (this.totalEnemiesNum == 0) {
+            spawn_prob = 1;
+            num_enemies_spawn = enemy_info[this.level].max_enemy_num - this.totalEnemiesNum;
+            final_spawn_num = Math.floor(Math.random() * num_enemies_spawn);
+        } else {
+            final_spawn_num = 1;
+        }
+
+        if (Math.random() > spawn_prob) return;
+        
+        this.lastEnemySpawnTime = timeStamp;
+        // spawn new enemies
+        
+        for (let i = 0; i < final_spawn_num; i++) {
+            let e = this.spawnEnemy();
+            this.enemies.push(e);
+            this.add(e);
+            this.totalEnemiesNum ++;
+
+                // add bullets
+            let enemyBullets = e.bullets;
+            let bulletStatus = {
+                initPos: e.position,
+                boundary: {
+                top: -this.bounds.height / 2 + 30,
+                bottom: this.bounds.height / 2 - 30,
+            },
+            };
+            // e.bullet = new Bullets(bulletStatus);
+            // e.bullet.isEnemy = true;
+            // this.add(e.bullet.particle);
+            for (let i = 0; i < enemyBullets.length; i++) {
+                enemyBullets[i] = new Bullets(bulletStatus);
+                enemyBullets[i].isEnemy = true;
+                this.add(enemyBullets[i].particle);
+            }
+        }
         
     }
 
@@ -431,6 +483,7 @@ class MainScene extends THREE.Scene {
             }
             if (x != undefined) {
                 this.remove(x);
+                this.totalEnemiesNum--;
             }
         }
         this.animateStars(timeStamp);
@@ -450,6 +503,7 @@ class MainScene extends THREE.Scene {
             //     e.bullets[i].enemyUpdate(); 
             // }
         })
+        this.checkEnemyUpgrades(timeStamp);
     }
 }
 
