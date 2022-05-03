@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { Vector3 } from "three";
 import { Player } from "objects";
+import { BULLET_L1, BULLET_L2 } from "../../textures"
 /**
  * status should include:
  *  position
@@ -9,26 +10,46 @@ import { Player } from "objects";
  *  parent
  */
 
+const BULLET_MATERIAL = [BULLET_L1, BULLET_L2]
+
 class Bullets extends THREE.Group {
     constructor (status) {
         super();
-        let {initPos, boundary} = status;
+        let {initPos, boundary, owner, velocity, level} = status;
         // create mesh
-        var geometry = new THREE.BoxGeometry(8, 3, 3);
-        var material = new THREE.MeshBasicMaterial({ color: 0xf0dc24 });
-        material.transparent = true;
-        material.opacity = 0.0;
-        this.particle = new THREE.Mesh(
-            geometry, material
-        )
+        //var geometry = new THREE.BoxGeometry(8, 3, 3);
+        //var material = new THREE.MeshBasicMaterial({ color: 0xf0dc24 });
+        
+        // let texture = new THREE.TextureLoader().load(BULLET_L1);
+        // texture.center.set(0.5, 0.5);
+        // //texture.repeat.set(-0.5, 0.5);
+        // if (owner === "enemy")
+        //     texture.rotation = -Math.PI/2;
+        // else texture.rotation = Math.PI/2;
+        // let material = new THREE.SpriteMaterial({map:texture});
+        // let sprite = new THREE.Sprite(material);
+        // sprite.scale.set(50, 50, 1);
+        // // this.add(sprite);
+
+        // material.transparent = true;
+        // material.opacity = 0.0;
+        // // this.particle = new THREE.Mesh(
+        // //     geometry, material
+        // // )
+        // this.particle = sprite;
+        this.owner = owner;
+        this.level = level;
+        
+        this.createBulletMaterial(owner, BULLET_MATERIAL[this.level]);
         
         // initialize variables
         this.initPos = initPos.clone();
         this.particle.position.set(initPos.x, initPos.y, initPos.z - 11);
-        this.velocity = new Vector3(0, 0, -8);
+        this.velocity = new Vector3(0, 0, velocity);
         this.bulletIsAlive = false;
         this.boundary = boundary;
         this.isEnemy = false;
+        
     }
 
     shootBullet(start) {
@@ -90,6 +111,32 @@ class Bullets extends THREE.Group {
             this.particle.position.z -= 6;
         }
 
+    }
+
+    createBulletMaterial (owner, image) {
+        let texture = new THREE.TextureLoader().load(image);
+        texture.center.set(0.5, 0.5);
+        //texture.repeat.set(-0.5, 0.5);
+        if (owner === "enemy")
+            texture.rotation = -Math.PI/2;
+        else texture.rotation = Math.PI/2;
+        let material = new THREE.SpriteMaterial({map:texture});
+        let sprite = new THREE.Sprite(material);
+        sprite.scale.set(50, 50, 1);
+        // this.add(sprite);
+
+        material.transparent = true;
+        material.opacity = 0.0;
+        // this.particle = new THREE.Mesh(
+        //     geometry, material
+        // )
+        this.particle = sprite;
+    }
+
+    // upgrade bullet
+    upgrade() {
+        this.createBulletMaterial(this.owner, BULLET_L2);
+        this.velocity.multiplyScalar(3);
     }
 }
 

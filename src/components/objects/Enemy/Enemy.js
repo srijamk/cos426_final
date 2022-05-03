@@ -13,7 +13,7 @@ import EXPLODE8 from "../../textures/Circle_explosion/Circle_explosion8.png";
 import EXPLODE9 from "../../textures/Circle_explosion/Circle_explosion9.png";
 import EXPLODE10 from "../../textures/Circle_explosion/Circle_explosion10.png";
 // import EXPLODE from "../../textures/explode.mp4";
-import { ExplodeGif } from "../../textures";
+// import { ExplodeGif } from "../../textures";
 /**
  * status should have:
  *  1. scale of the sprite
@@ -109,17 +109,17 @@ class Enemy extends THREE.Group {
         // sprite = new THREE.Sprite(material);
         // sprite.scale.set(scale, scale, 1);
         // this.add(sprite);
-        let videoTexture = new THREE.TextureLoader().load(ExplodeGif);
-        videoTexture.center.set(0.5, 0.5);
-        videoTexture.repeat.set(1, -1);
-        videoTexture.minFilter = THREE.NearestFilter;
+        // let videoTexture = new THREE.TextureLoader().load(ExplodeGif);
+        // videoTexture.center.set(0.5, 0.5);
+        // videoTexture.repeat.set(1, -1);
+        // videoTexture.minFilter = THREE.NearestFilter;
 
-        let material = new THREE.SpriteMaterial({ map: videoTexture });
-        let sprite = new THREE.Sprite(material);
-        let scaleVal = 100;
-        sprite.scale.set(scaleVal, scaleVal, 1);
-        this.add(sprite);
-        console.log(sprite.position);
+        // let material = new THREE.SpriteMaterial({ map: videoTexture });
+        // let sprite = new THREE.Sprite(material);
+        // let scaleVal = 100;
+        // sprite.scale.set(scaleVal, scaleVal, 1);
+        // this.add(sprite);
+        // console.log(sprite.position);
   }
 
     handleWallCollision() {
