@@ -28,13 +28,13 @@ module.exports = {
         exclude: path.resolve(__dirname, "./node_modules/"),
       },
       {
-        test: /\.(vert|frag|glsl|shader|txt)$/i,
+        test: /\.(vert|frag|glsl|shader|txt|mp4)$/i,
         use: "raw-loader",
         exclude: path.resolve(__dirname, "./node_modules/"),
       },
       {
         type: "javascript/auto",
-        test: /\.(json)/,
+        test: /\.(json|mp4)/,
         exclude: path.resolve(__dirname, "./node_modules/"),
         use: [
           {
@@ -42,6 +42,18 @@ module.exports = {
           },
         ],
       },
+      {
+        test: /\.(mov|mp4)$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[name].[ext]'
+            }  
+          }
+        ]
+      }
+      
     ],
   },
   resolve: {
