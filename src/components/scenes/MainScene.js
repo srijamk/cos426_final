@@ -16,7 +16,7 @@ const NUM_PARTICLES = 1000;
 const PARTICLE_RADIUS = 1.3;
 const PLAYER_SCALE = 50;
 const ENEMY_SCALE = 50;
-const NUM_ENEMIES = 3;
+const NUM_ENEMIES = 10;
 const ENEMY_SPEED = 90; // math.random() * 20 + 90 -> [90, 110]
 const ENEMY_RADIUS = 1.3;
 
@@ -105,6 +105,7 @@ class MainScene extends THREE.Scene {
         // add enemies
         this.initEnemies();
         this.initEnemyBullets();
+
         // add lights
         const lights = new BasicLights();
 
@@ -125,6 +126,7 @@ class MainScene extends THREE.Scene {
             this.add(this.bullets[i].particle);
         }
         this.lastShootTime = -1;
+        this.win = false;
     }
     // add bullets for each enemy
     initEnemyBullets() {
@@ -166,11 +168,16 @@ class MainScene extends THREE.Scene {
         plane.renderOrder = 3;
 
         const loader = new FontLoader();
-        
+        let text = 'Game Over'
+        let color = 0xff0000;
+        if (this.win) {
+            text = 'Victory'
+            color = 0xffffff;
+        }
         // Display a "Game Paused message"
         loader.load( CyberskyFont, function ( font ) {
-        
-            const geometry = new TextGeometry( 'Game Over', {
+            
+            const geometry = new TextGeometry( text, {
                 font: font,
                 size: 80,
                 height: 1,
@@ -180,7 +187,7 @@ class MainScene extends THREE.Scene {
             geometry.center();
 
             var material = new THREE.MeshBasicMaterial({
-                color: 0xff0000,
+                color: color,
               });
               
             var txt = new THREE.Mesh(geometry, material);
@@ -487,7 +494,11 @@ class MainScene extends THREE.Scene {
             }
         }
         this.animateStars(timeStamp);
+        let deadEnemies = 0;
         this.enemies.forEach( e => {
+            if (!e.isAlive) {
+                deadEnemies++;
+            }
             e.update(this.player.position, timeStamp);
             if (!e.bullets[0].bulletIsAlive && e.isAlive) {
                 this.updateEnemyShoot(e, e.bullets[0], timeStamp);
@@ -504,6 +515,10 @@ class MainScene extends THREE.Scene {
             // }
         })
         this.checkEnemyUpgrades(timeStamp);
+        if (deadEnemies == NUM_ENEMIES) {
+            this.win = true;
+            this.endGame();
+        }
     }
 }
 
