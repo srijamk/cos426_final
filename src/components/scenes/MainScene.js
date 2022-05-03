@@ -104,7 +104,7 @@ class MainScene extends THREE.Scene {
 
         // add enemies
         this.initEnemies();
-
+        this.initEnemyBullets();
         // add lights
         const lights = new BasicLights();
 
@@ -126,7 +126,28 @@ class MainScene extends THREE.Scene {
         }
         this.lastShootTime = -1;
     }
-
+    // add bullets for each enemy
+    initEnemyBullets() {
+        this.enemies.forEach((e) => {
+          // add bullets
+        let enemyBullets = e.bullets;
+        let bulletStatus = {
+            initPos: e.position,
+            boundary: {
+            top: -this.bounds.height / 2 + 30,
+            bottom: this.bounds.height / 2 - 30,
+          },
+        };
+        // e.bullet = new Bullets(bulletStatus);
+        // e.bullet.isEnemy = true;
+        // this.add(e.bullet.particle);
+        for (let i = 0; i < enemyBullets.length; i++) {
+            enemyBullets[i] = new Bullets(bulletStatus);
+            enemyBullets[i].isEnemy = true;
+            this.add(enemyBullets[i].particle);
+        }
+        });
+    }
     resetHealth() {
         // TODO: show HEALTH title in top-left with TextGeometry
         // TODO: create ring
@@ -382,7 +403,7 @@ class MainScene extends THREE.Scene {
                 var myAudio = new Audio(ShootSound);
                 myAudio.volume = 0.2;
                 myAudio.play();
-                this.removeOneHealth();
+                // this.removeOneHealth();
                 this.bullets[i].shootBullet(this.player.position);
                 break;
             }
@@ -392,13 +413,22 @@ class MainScene extends THREE.Scene {
     // 1. if there's no enemies in the scene, then spawn new enemies
     // 2. after certain amount of time, spawn new enemies, until max is reached
     checkEnemyUpgrades () {
+        
+    }
 
+    updateEnemyShoot(e, pewpew, timeStamp) {
+        if (this.status.isPaused) return;
+        pewpew.shootBullet(e.position);
     }
 
     update (timeStamp) {
+        if (this.status.isPaused) return;
         this.player.update();
         for (let i = 0; i < this.bullets.length; i++) {
-            let x = this.bullets[i].update(this.enemies);
+            let x = undefined;
+            if (!this.bullets[i].isEnemy) {
+                x = this.bullets[i].playerUpdate(this.enemies);
+            }
             if (x != undefined) {
                 this.remove(x);
             }
@@ -406,6 +436,19 @@ class MainScene extends THREE.Scene {
         this.animateStars(timeStamp);
         this.enemies.forEach( e => {
             e.update(this.player.position, timeStamp);
+            if (!e.bullets[0].bulletIsAlive && e.isAlive) {
+                this.updateEnemyShoot(e, e.bullets[0], timeStamp);
+            }
+            e.bullets[0].enemyUpdate();
+            if(e.bullets[0].handlePlayerBulletCollision(this.player)) {
+                this.removeOneHealth();
+            }
+            // for (let i = 0; i < e.bullets.length; i++) {
+            //   if (!e.bullets[i].bulletIsAlive) {                           
+            //     this.updateEnemyShoot(e, e.bullets[i], timeStamp);
+            //   }
+            //     e.bullets[i].enemyUpdate(); 
+            // }
         })
     }
 }
