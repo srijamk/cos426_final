@@ -169,8 +169,10 @@ class MainScene extends THREE.Scene {
 
         const loader = new FontLoader();
         let text = 'Game Over'
+        let color = 0xff0000;
         if (this.win) {
             text = 'Victory'
+            color = 0xffffff;
         }
         // Display a "Game Paused message"
         loader.load( CyberskyFont, function ( font ) {
@@ -185,7 +187,7 @@ class MainScene extends THREE.Scene {
             geometry.center();
 
             var material = new THREE.MeshBasicMaterial({
-                color: 0xff0000,
+                color: color,
               });
               
             var txt = new THREE.Mesh(geometry, material);
