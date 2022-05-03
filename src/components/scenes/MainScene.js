@@ -430,7 +430,7 @@ class MainScene extends THREE.Scene {
         this.animateStars(timeStamp);
         this.enemies.forEach( e => {
             e.update(this.player.position, timeStamp);
-            if (!e.bullets[0].bulletIsAlive) {
+            if (!e.bullets[0].bulletIsAlive && e.isAlive) {
                 this.updateEnemyShoot(e, e.bullets[0], timeStamp);
             }
             e.bullets[0].enemyUpdate();
