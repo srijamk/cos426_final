@@ -389,6 +389,12 @@ class MainScene extends THREE.Scene {
         }
     }
 
+    // 1. if there's no enemies in the scene, then spawn new enemies
+    // 2. after certain amount of time, spawn new enemies, until max is reached
+    checkEnemyUpgrades () {
+
+    }
+
     update (timeStamp) {
         this.player.update();
         for (let i = 0; i < this.bullets.length; i++) {
