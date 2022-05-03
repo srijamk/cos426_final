@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { Vector3 } from "three";
-
+import { Player } from "objects";
 /**
  * status should include:
  *  position
@@ -28,15 +28,19 @@ class Bullets extends THREE.Group {
         this.velocity = new Vector3(0, 0, -8);
         this.bulletIsAlive = false;
         this.boundary = boundary;
+        this.isEnemy = false;
     }
-     shootBullet(start) {
+
+    shootBullet(start) {
         this.particle.position.set(start.x, start.y, start.z - 11);
         this.bulletIsAlive = true;
         this.particle.material.opacity = 1.0;
     }
-        distance(pos1, pos2) {
+    
+    distance(pos1, pos2) {
         return ((pos1.x - pos2.x) ** 2 + (pos1.z - pos2.z) ** 2) ** 0.5;
     }
+
     handleBulletCollisions(enemies) {
         // check if in radius of enemy:
         for (let i = 0; i < enemies.length; i++) {
@@ -50,7 +54,28 @@ class Bullets extends THREE.Group {
             }
         }
     }
-    update(enemies) {
+
+    handlePlayerBulletCollision(player) {
+        let dist = this.distance(this.particle.position, player.position);
+        if(dist < 25) {
+            this.bulletIsAlive = false;
+            this.particle.material.opacity = 0.0;
+            return true;
+        }
+    }
+    enemyUpdate() {
+        // if bullet is out of bounds then make clear
+        if(this.bulletIsAlive) {
+            if(this.particle.position.z > this.boundary.bottom) {
+                this.bulletIsAlive = false;
+                this.particle.material.opacity = 0.0;
+            }
+            // let x = this.handleBulletCollisions(enemies);
+            // if (x !== undefined) return x;
+            this.particle.position.z += 6;
+        }
+    }
+    playerUpdate(enemies) {
         // if bullet is out of bounds then make clear
         if(this.bulletIsAlive) {
             if(this.particle.position.z > this.initPos.z - 11 && this.particle.position.z > this.initPos.z - 22) {

@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { Vector3 } from 'three';
+import { Bullets } from 'objects';
 import ENEMY from '../../textures/main_shooter_1.png';
 import EXPLODE1 from "../../textures/Circle_explosion/Circle_explosion1.png";
 import EXPLODE2 from "../../textures/Circle_explosion/Circle_explosion2.png";
@@ -79,6 +80,7 @@ class Enemy extends THREE.Group {
         let sprite = new THREE.Sprite(material);
         sprite.scale.set(scale, scale, 1);
         this.add(sprite);
+        this.bullets = new Array(10);
     }
     
      explode() {
@@ -192,6 +194,7 @@ class Enemy extends THREE.Group {
         if (this.frozen) return;
         this.move(playerPos);
         this.handleWallCollision();
+
     }
 
 }
