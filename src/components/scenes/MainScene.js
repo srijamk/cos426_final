@@ -28,7 +28,8 @@ const enemy_info = [
         "enemy_speed": 0, 
         "enemy_movement": "static", 
         "enemy_scale": ENEMY_SCALE, 
-        "enemy_radius": ENEMY_RADIUS
+        "enemy_radius": ENEMY_RADIUS, 
+        "bullet_level": 0
     }, 
     {
         "level": 1, 
@@ -37,7 +38,8 @@ const enemy_info = [
         "enemy_speed": 100, 
         "enemy_movement": "horizontal",
         "enemy_scale": ENEMY_SCALE, 
-        "enemy_radius": ENEMY_RADIUS
+        "enemy_radius": ENEMY_RADIUS, 
+        "bullet_level": 1
     }, 
     {
         "level": 2,
@@ -46,7 +48,8 @@ const enemy_info = [
         "enemy_speed": 110, 
         "enemy_movement": "random",
         "enemy_scale": ENEMY_SCALE, 
-        "enemy_radius": ENEMY_RADIUS
+        "enemy_radius": ENEMY_RADIUS, 
+        "bullet_level": 1
     }
 ]
 
@@ -120,6 +123,9 @@ class MainScene extends THREE.Scene {
             top: -this.bounds.height / 2 + 30,
             bottom: this.bounds.height / 2 - 30,
           },
+          owner: "player", 
+          velocity: -8, 
+          level: 0
         };
         for (let i = 0; i < this.bullets.length; i++) {
             this.bullets[i] = new Bullets(bulletStatus);
@@ -139,6 +145,9 @@ class MainScene extends THREE.Scene {
             top: -this.bounds.height / 2 + 30,
             bottom: this.bounds.height / 2 - 30,
           },
+          owner: "enemy", 
+          velocity: -8, 
+          level: enemy_info[this.level].bullet_level
         };
         // e.bullet = new Bullets(bulletStatus);
         // e.bullet.isEnemy = true;
@@ -310,7 +319,7 @@ class MainScene extends THREE.Scene {
             // color.setRGB( vx, vy, vz );
             // color.setHSL( i / NUM_PARTICLES, 1.0, 0.5 );
             // colors.push( color.r, color.g, color.b );
-            colors.push(vx, vy, vz)
+            colors.push(vx, vy*0.3, vz)
 
             sizes.push( 10 );
 
@@ -459,9 +468,12 @@ class MainScene extends THREE.Scene {
             let bulletStatus = {
                 initPos: e.position,
                 boundary: {
-                top: -this.bounds.height / 2 + 30,
-                bottom: this.bounds.height / 2 - 30,
-            },
+                    top: -this.bounds.height / 2 + 30,
+                    bottom: this.bounds.height / 2 - 30,
+                },
+                owner: "enemy", 
+                velocity: -8, 
+                level: enemy_info[this.level].bullet_level
             };
             // e.bullet = new Bullets(bulletStatus);
             // e.bullet.isEnemy = true;

@@ -13,8 +13,7 @@ import EXPLODE8 from "../../textures/Circle_explosion/Circle_explosion8.png";
 import EXPLODE9 from "../../textures/Circle_explosion/Circle_explosion9.png";
 import EXPLODE10 from "../../textures/Circle_explosion/Circle_explosion10.png";
 // import EXPLODE from "../../textures/explode.mp4";
-import { ExplodeGif } from "../../textures";
-import { FirstExplosion } from "../../textures";
+// import { ExplodeGif } from "../../textures";
 /**
  * status should have:
  *  1. scale of the sprite
