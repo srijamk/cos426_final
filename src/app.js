@@ -9,7 +9,7 @@
 import * as THREE from 'three';
 import { WebGLRenderer, PerspectiveCamera, OrthographicCamera, Vector3 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { SeedScene, MainScene, StartScene, DifficultyScene } from 'scenes';
+import { SeedScene, MainScene, StartScene, DifficultyScene, ChoosePlayerScene } from 'scenes';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
 import { StartFont, SpaceMissionFont, CyberskyFont } from './fonts';
@@ -105,12 +105,18 @@ window.addEventListener("keydown", function (event) {
             var myAudio = new Audio(SelectSound);
             myAudio.play();
             sceneNumber++;
-            scene = new DifficultyScene(new THREE.Euler().copy(camera.rotation));
-        } else if (sceneNumber == 1 || lastChildName === "gameover") {
+            scene = new ChoosePlayerScene(new THREE.Euler().copy(camera.rotation));
+        } else if (sceneNumber == 1) {
             // https://mixkit.co/free-sound-effects/click/
             var myAudio = new Audio(SelectSound);
             myAudio.play();
             sceneNumber++;
+            scene = new DifficultyScene(new THREE.Euler().copy(camera.rotation));
+
+        } else if (sceneNumber == 2 || lastChildName === "gameover") {
+            var myAudio = new Audio(SelectSound);
+            myAudio.play();
+            sceneNumber++;            
             camera = new THREE.OrthographicCamera(
                 cameraWidth / -2, cameraWidth / 2, cameraHeight / 2, cameraHeight / -2, 0, 1000
             );
@@ -196,7 +202,7 @@ window.addEventListener("keydown", function (event) {
 
         renderer.render(scene, camera);
 
-    } else if (sceneNumber == 1) { 
+    } else if (sceneNumber == 2) { 
         
         if (event.keyCode == 37) {
             var myAudio = new Audio(SwitchSound);

@@ -20,7 +20,7 @@ class ChoosePlayerScene extends THREE.Scene {
         // load TextGeometry with title of game
         loader.load( CyberskyFont, function ( font ) {
         
-            const geometry = new TextGeometry( 'Choose your difficulty.', {
+            const geometry = new TextGeometry( 'Choose your player.', {
                 font: font,
                 size: 40,
                 height: 1,
