@@ -44,6 +44,7 @@ class Player extends THREE.Group {
         this.frozen = false;
         this.blinkStart = undefined;
         this.continueBlink = false;
+        this.hasShield = false;
     }
 
     initPlayer (scale) {
@@ -98,7 +99,13 @@ class Player extends THREE.Group {
           this.blinkStart = curTime;
         }
         let elapsedTime = curTime - this.blinkStart;
-        if (elapsedTime >= 300) {
+        // if(elapsedTime >= 5000) {
+        //     this.blinkStart = undefined;
+        //     this.sprite.material.opacity = 1.0;
+        //     this.continueBlink = false;
+        //     return;
+        // }
+        if (!this.hasShield && elapsedTime >= 300) {
           this.blinkStart = undefined;
           this.sprite.material.opacity = 1.0;
           this.continueBlink = false;
@@ -115,7 +122,6 @@ class Player extends THREE.Group {
         this.handLeftRightMovement();
         this.updateVelocity();
         this.updatePosition();
-
         this.handleWallCollision();
     }
 }

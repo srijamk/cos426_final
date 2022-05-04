@@ -217,9 +217,7 @@ class Enemy extends THREE.Group {
         this.move(playerPos);
         this.handleWallCollision();
         if (this.exploding) {
-            console.log("calling explodeWork");
             this.explodeWork(timeStamp);
-            console.log(timeStamp);
         }
     }
 
