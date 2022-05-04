@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { Color } from 'three';
 import { BasicLights } from 'lights';
-import { Player, Wall, Enemy, PowerUps } from 'objects';
+import { Player, Wall, Enemy, Powerups } from 'objects';
 import SPARK from '../textures/spark1.png';
 import { Vector3 } from 'three';
 import Bullets from '../objects/Bullets/Bullets';
@@ -528,7 +528,7 @@ class MainScene extends THREE.Scene {
             bottom: this.bounds.height / 2 - 30,
           }
         };
-        let powerup = new PowerUps(powerupStatus);
+        let powerup = new Powerups(powerupStatus);
         powerup.drop();
     }
 

@@ -28,9 +28,7 @@ class Powerups extends THREE.Group {
     this.sprite.scale.set(scale, scale, 1);
     this.add(this.sprite);
   }
-  drop() {
-    console.log("hello");
-  }
+  drop() {}
   update() {}
 }
 
