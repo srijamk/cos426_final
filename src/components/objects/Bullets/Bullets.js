@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { Vector3 } from "three";
 import { Player } from "objects";
-import { BULLET_L1, BULLET_L2 } from "../../textures"
+import { BULLET_L1, BULLET_L2, BULLET_L3, PLAYER_BULLET } from "../../textures"
 /**
  * status should include:
  *  position
@@ -10,12 +10,12 @@ import { BULLET_L1, BULLET_L2 } from "../../textures"
  *  parent
  */
 
-const BULLET_MATERIAL = [BULLET_L1, BULLET_L2]
+const BULLET_MATERIAL = [BULLET_L1, BULLET_L2, BULLET_L3]
 
 class Bullets extends THREE.Group {
     constructor (status) {
         super();
-        let {initPos, boundary, owner, velocity, level} = status;
+        let {initPos, boundary, owner, velocity, level, dmg} = status;
         // create mesh
         //var geometry = new THREE.BoxGeometry(8, 3, 3);
         //var material = new THREE.MeshBasicMaterial({ color: 0xf0dc24 });
@@ -39,13 +39,16 @@ class Bullets extends THREE.Group {
         // this.particle = sprite;
         this.owner = owner;
         this.level = level;
+        this.dmg = dmg;
         
-        this.createBulletMaterial(owner, BULLET_MATERIAL[this.level]);
+        if (owner === "enemy")
+            this.createBulletMaterial(owner, BULLET_MATERIAL[this.level]);
+        else this.createBulletMaterial(owner, PLAYER_BULLET);
         
         // initialize variables
         this.initPos = initPos.clone();
         this.particle.position.set(initPos.x, initPos.y, initPos.z - 11);
-        this.velocity = new Vector3(0, 0, velocity);
+        this.velocity = new Vector3(0, 0, velocity * (this.level+1));
         this.bulletIsAlive = false;
         this.boundary = boundary;
         this.isEnemy = false;
@@ -132,6 +135,11 @@ class Bullets extends THREE.Group {
         //     geometry, material
         // )
         this.particle = sprite;
+    }
+
+    // bullet will explode at this location
+    bulletExplode (pos) {
+
     }
 
     // upgrade bullet
