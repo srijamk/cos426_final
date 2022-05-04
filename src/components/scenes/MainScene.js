@@ -335,13 +335,12 @@ class MainScene extends THREE.Scene {
 
     initEnemies () {
         this.enemies = []
-        this.totalEnemiesNum = enemy_info[this.level].init_enemy_num;
         for (let i = 0; i < enemy_info[this.level].init_enemy_num; i++) {
             let enemy = this.spawnEnemy();
             this.enemies.push(enemy);
             this.add(enemy);
         }
-        this.lastEnemySpawnTime = 1;
+        this.lastEnemySpawnTime = 0;
     }
 
     spawnEnemy () {
@@ -436,18 +435,20 @@ class MainScene extends THREE.Scene {
     // 1. if there's no enemies in the scene, then spawn new enemies
     // 2. after certain amount of time, spawn new enemies, until max is reached
     checkEnemyUpgrades (timeStamp) {
-        if (this.totalEnemiesNum >= enemy_info[this.level].max_enemy_num)
+        let totalEnemiesNum = this.checkAliveEnemies();
+        console.log(totalEnemiesNum)
+        if (totalEnemiesNum >= enemy_info[this.level].max_enemy_num)
             return;
         
-        if (this.lastEnemySpawnTime > 0 && ((timeStamp - this.lastEnemySpawnTime) < 10000) && this.totalEnemiesNum > 0)
-            return;
-        
-        let spawn_prob = 0.2; // will spawn with prob 0.2
-        let num_enemies_spawn, final_spawn_num;
-        if (this.totalEnemiesNum == 0) {
+        let elapsedTime = timeStamp - this.lastEnemySpawnTime;
+        //console.log(elapsedTime)
+        let spawn_prob = (elapsedTime/(10*60*60*100))*0.4;
+        console.log(spawn_prob)
+        let final_spawn_num;
+        if (totalEnemiesNum === 0) {
             spawn_prob = 1;
-            num_enemies_spawn = enemy_info[this.level].max_enemy_num - this.totalEnemiesNum;
-            final_spawn_num = Math.floor(Math.random() * num_enemies_spawn);
+            let tmp = Math.floor(Math.random()*2);
+            final_spawn_num = enemy_info[this.level].init_enemy_num + tmp;
         } else {
             final_spawn_num = 1;
         }
@@ -461,7 +462,6 @@ class MainScene extends THREE.Scene {
             let e = this.spawnEnemy();
             this.enemies.push(e);
             this.add(e);
-            this.totalEnemiesNum ++;
 
                 // add bullets
             let enemyBullets = e.bullets;
@@ -492,6 +492,13 @@ class MainScene extends THREE.Scene {
         pewpew.shootBullet(e.position);
     }
 
+    checkAliveEnemies () {
+        let count = 0;
+        for (let e of this.enemies) 
+            if (e.isAlive) count += 1
+        return count;
+    }
+
     update (timeStamp) {
         if (this.status.isPaused) return;
         this.player.update();
@@ -502,7 +509,6 @@ class MainScene extends THREE.Scene {
             }
             if (x != undefined) {
                 this.remove(x);
-                this.totalEnemiesNum--;
             }
         }
         this.animateStars(timeStamp);
