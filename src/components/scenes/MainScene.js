@@ -1,11 +1,11 @@
 import * as THREE from 'three';
 import { Color } from 'three';
 import { BasicLights } from 'lights';
-import { Player, Wall, Enemy } from 'objects';
+import { Player, Wall, Enemy, Powerups } from 'objects';
 import SPARK from '../textures/spark1.png';
 import { Vector3 } from 'three';
 import Bullets from '../objects/Bullets/Bullets';
-import {ShootSound, LooseLife} from '../../assets';
+import {ShootSound, LooseLife, Defeat, Victory} from '../../assets';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
 import { StartFont, SpaceMissionFont, CyberskyFont } from '../../fonts';
@@ -137,7 +137,18 @@ class MainScene extends THREE.Scene {
         }
         this.lastShootTime = -1;
         this.win = false;
+        // this.initPowerups();
     }
+
+    // initPowerups() {
+    //     this.powerups = new Array(10);
+    //     let powerupStatus = {
+    //         power: undefined
+    //     }
+    //     for(let i = 0; i < this.powerups.length; i++) {
+    //         this.powerups[i] = new Powerups(powerupStatus);
+    //     }
+    // }
     // add bullets for each enemy
     initEnemyBullets() {
         this.enemies.forEach((e) => {
@@ -184,10 +195,16 @@ class MainScene extends THREE.Scene {
         const loader = new FontLoader();
         let text = 'Game Over'
         let color = 0xff0000;
+        let audio = Defeat;
         if (this.win) {
             text = 'Victory'
             color = 0xffffff;
+            audio = Victory;
         }
+
+        var myAudio = new Audio(audio);
+        myAudio.volume = 0.2;
+        myAudio.play();
         // Display a "Game Paused message"
         loader.load( CyberskyFont, function ( font ) {
             
@@ -502,6 +519,22 @@ class MainScene extends THREE.Scene {
         return count;
     }
 
+    dropPowerup() {
+        let powerupStatus = {
+          power: undefined,
+          boundaryWidth: {
+            left: -this.bounds.width / 2 + PLAYER_SCALE,
+            right: this.bounds.width / 2 - PLAYER_SCALE,
+          },
+          boundaryHeight: {
+            top: -this.bounds.height / 2 + 30,
+            bottom: this.bounds.height / 2 - 30,
+          }
+        };
+        let powerup = new Powerups(powerupStatus);
+        powerup.drop();
+    }
+
     update (timeStamp) {
         if (this.status.isPaused) return;
         this.player.update();
@@ -543,6 +576,12 @@ class MainScene extends THREE.Scene {
             //     e.bullets[i].enemyUpdate(); 
             // }
         })
+        this.dropPowerup();
+        // let powerupTime = 0;
+        // if(timeStamp / 5000 > powerupTime) {
+        //     this.dropPowerup();
+        //     powerupTime++;
+        // }
         this.checkEnemyUpgrades(timeStamp);
         if (deadEnemies == NUM_ENEMIES) {
             this.win = true;
