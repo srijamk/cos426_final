@@ -25,7 +25,7 @@ import { SelectSound, SwitchSound, ShootSound } from './assets';
 let camera = new PerspectiveCamera();
 let frozen = false;
 //camera.position.set(0, 50, 0);
-console.log("rotation: ", camera.rotation);
+// console.log("rotation: ", camera.rotation);
 camera.position.set(0, 300, 400);
 camera.up.set(0, 0, -10);
 camera.lookAt(0, 0, 0);
