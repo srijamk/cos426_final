@@ -5,7 +5,7 @@ import { Player, Wall, Enemy } from 'objects';
 import SPARK from '../textures/spark1.png';
 import { Vector3 } from 'three';
 import Bullets from '../objects/Bullets/Bullets';
-import {ShootSound} from '../../assets';
+import {ShootSound, LooseLife} from '../../assets';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
 import { StartFont, SpaceMissionFont, CyberskyFont } from '../../fonts';
@@ -518,6 +518,13 @@ class MainScene extends THREE.Scene {
             e.bullets[0].enemyUpdate();
             if(e.bullets[0].handlePlayerBulletCollision(this.player)) {
                 this.removeOneHealth();
+                this.player.blink(timeStamp);
+                var myAudio = new Audio(LooseLife);
+                myAudio.volume = 0.2;
+                myAudio.play();
+            }
+            if(this.player.continueBlink) {
+                this.player.blink(timeStamp);
             }
             // for (let i = 0; i < e.bullets.length; i++) {
             //   if (!e.bullets[i].bulletIsAlive) {                           

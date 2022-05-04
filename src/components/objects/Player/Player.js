@@ -42,14 +42,16 @@ class Player extends THREE.Group {
         this.boundary = boundary;
 
         this.frozen = false;
+        this.blinkStart = undefined;
+        this.continueBlink = false;
     }
 
     initPlayer (scale) {
         let texture = new THREE.TextureLoader().load(PLAYER);
         let material = new THREE.SpriteMaterial ( {map:texture} );
-        let sprite = new THREE.Sprite(material);
-        sprite.scale.set(scale, scale, 1);
-        this.add(sprite);
+        this.sprite = new THREE.Sprite(material);
+        this.sprite.scale.set(scale, scale, 1);
+        this.add(this.sprite);
     }
 
     removeOneHealth() {
@@ -90,6 +92,22 @@ class Player extends THREE.Group {
         this.frozen = false;
     }
 
+    blink = (curTime) => {
+        this.continueBlink = true;
+        if (!this.blinkStart) {
+          this.blinkStart = curTime;
+        }
+        let elapsedTime = curTime - this.blinkStart;
+        if (elapsedTime >= 300) {
+          this.blinkStart = undefined;
+          this.sprite.material.opacity = 1.0;
+          this.continueBlink = false;
+          return;
+        }
+        let opacity = [0,1,0,1,0,1];
+        let i = Math.floor(elapsedTime / 30);
+        this.sprite.material.opacity = opacity[i];
+    }
     update() {
         if (this.frozen) return;
         // reset
@@ -99,7 +117,6 @@ class Player extends THREE.Group {
         this.updatePosition();
 
         this.handleWallCollision();
-
     }
 }
 
