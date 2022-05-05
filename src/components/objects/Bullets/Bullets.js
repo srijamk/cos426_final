@@ -142,6 +142,11 @@ class Bullets extends THREE.Group {
         this.particle = sprite;
     }
 
+    bulletExplode (pos) {
+        console.assert(this.level >= 2, 'Bullet level must greater than or equal to level 2');
+        
+    }
+
 
     // upgrade bullet
     upgrade() {

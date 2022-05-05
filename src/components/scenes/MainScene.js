@@ -544,7 +544,8 @@ class MainScene extends THREE.Scene {
         if (shieldStart) {
             let powerupDuration = timeStamp - shieldStart;
             if (powerupDuration > 5000) {
-                this.player.hasShield = false;
+                // this.player.hasShield = false;
+                this.player.disableShield();
                 shieldStart = undefined;
             }
         }

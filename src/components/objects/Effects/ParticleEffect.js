@@ -16,13 +16,11 @@ class ParticleEffect {
         this.type = status.type
         this.position = status.parentPosition;
         this.numParticles = status.numParticles;
-        this.parentSpeed = status.parentSpeed;
-        this.speed = status.speed;
     }
 
     createParticles () {
         let geometry = new THREE.BufferGeometry();
-
+        
     }
 }
 
