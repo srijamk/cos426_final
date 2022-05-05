@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
 import { StartFont, SpaceMissionFont, CyberskyFont } from '../../fonts';
+import PLAYER from '../textures/main_shooter.png';
+import PLAYER2 from '../textures/main_shooter_2.png';
+import PLAYER3 from '../textures/main_shooter_3.png';
 
 class ChoosePlayerScene extends THREE.Scene {
     constructor(rot) {
@@ -14,13 +17,70 @@ class ChoosePlayerScene extends THREE.Scene {
         this.level = 0; // defaults to Easy (0)
 
 
+        const geometry = new THREE.BoxGeometry( 100, 50, 10 );
+        var material = new THREE.MeshBasicMaterial({
+            color: 0x59007f,
+          });
+        var easyBox = new THREE.Mesh(geometry, material);
+        easyBox.rotation.copy(curScene.rotn);
+        easyBox.translateX(-150);
+        easyBox.translateZ(100);
+        easyBox.translateY(-20);
+        let texture = new THREE.TextureLoader().load(PLAYER);
+        let spritematerial = new THREE.SpriteMaterial ( {map:texture, color:0xffffff} );
+        let sprite1 = new THREE.Sprite(spritematerial);
+        sprite1.rotation.copy(curScene.rotn);
+        sprite1.translateX(-146);
+        sprite1.translateZ(110);
+        sprite1.translateY(-20);
+        let scale = 40;
+        sprite1.scale.set(scale, scale, 1);
+
+        this.add( easyBox );
+        this.add(sprite1);
+
+        var mediumBox = new THREE.Mesh(geometry, material);
+        mediumBox.rotation.copy(curScene.rotn);
+        mediumBox.translateX(0);
+        mediumBox.translateZ(100);
+        mediumBox.translateY(-20);
+        texture = new THREE.TextureLoader().load(PLAYER2);
+        spritematerial = new THREE.SpriteMaterial ( {map:texture, color:0x000000} );
+        let sprite2 = new THREE.Sprite(spritematerial);
+        sprite2.rotation.copy(curScene.rotn);
+        sprite2.translateX(0);
+        sprite2.translateZ(110);
+        sprite2.translateY(-20);
+        sprite2.scale.set(scale, scale, 1);
+
+        this.add( mediumBox );
+        this.add(sprite2);
+
+        var hardBox = new THREE.Mesh(geometry, material);
+        hardBox.rotation.copy(curScene.rotn);
+        hardBox.translateX(150);
+        hardBox.translateZ(100);
+        hardBox.translateY(-20);
+        texture = new THREE.TextureLoader().load(PLAYER3);
+        spritematerial = new THREE.SpriteMaterial ( {map:texture, color:0x000000} );
+        let sprite3 = new THREE.Sprite(spritematerial);
+        sprite3.rotation.copy(curScene.rotn);
+        sprite3.translateX(150);
+        sprite3.translateZ(110);
+        sprite3.translateY(-20);
+        sprite3.scale.set(scale, scale, 1);
+
+        this.add( hardBox );
+        this.add(sprite3);
+
+
         // font from https://www.fontspace.com/category/space
         const loader = new FontLoader();
 
         // load TextGeometry with title of game
         loader.load( CyberskyFont, function ( font ) {
         
-            const geometry = new TextGeometry( 'Choose your difficulty.', {
+            const geometry = new TextGeometry( 'Choose your player.', {
                 font: font,
                 size: 40,
                 height: 1,
@@ -45,7 +105,7 @@ class ChoosePlayerScene extends THREE.Scene {
         // load toggle instructions
         loader.load( CyberskyFont, function ( font ) {
         
-            const geometry = new TextGeometry( 'Toggle through difficulty levels with your arrow keys.', {
+            const geometry = new TextGeometry( 'Toggle through players with your arrow keys.', {
                 font: font,
                 size: 20,
                 height: 1,
@@ -66,32 +126,7 @@ class ChoosePlayerScene extends THREE.Scene {
             curScene.add(txt);
         } );
 
-        const geometry = new THREE.BoxGeometry( 100, 50, 10 );
-        var material = new THREE.MeshBasicMaterial({
-            color: 0x59007f,
-          });
-        var easyBox = new THREE.Mesh(geometry, material);
-        easyBox.rotation.copy(curScene.rotn);
-        easyBox.translateX(-150);
-        easyBox.translateZ(100);
-        easyBox.translateY(-20);
-
-        this.add( easyBox );
-
-        var mediumBox = new THREE.Mesh(geometry, material);
-        mediumBox.rotation.copy(curScene.rotn);
-        mediumBox.translateX(0);
-        mediumBox.translateZ(100);
-        mediumBox.translateY(-20);
-        this.add( mediumBox );
-
-        var hardBox = new THREE.Mesh(geometry, material);
-        hardBox.rotation.copy(curScene.rotn);
-        hardBox.translateX(150);
-        hardBox.translateZ(100);
-        hardBox.translateY(-20);
-        this.add( hardBox );
-
+        /*
         // load TextGeometry with instructions
         loader.load( CyberskyFont, function ( font ) {
         
@@ -154,7 +189,7 @@ class ChoosePlayerScene extends THREE.Scene {
             hardTxt.renderOrder = 1;
             curScene.add(hardTxt);
         } );
-
+*/
     }
 
     resetEverything () {

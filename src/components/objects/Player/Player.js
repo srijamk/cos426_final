@@ -9,14 +9,14 @@ import PLAYER from '../../textures/main_shooter.png';
 class Player extends THREE.Group {
 
     // playerStatus: color, health
-    constructor (playerStatus, camera) {
+    constructor (playerStatus, camera, player) {
         super();
 
         let { radius, playerPos, boundary } = playerStatus;
         
         // draw a triangle
 // <<<<<<< test
-        this.initPlayer(playerStatus.scale);
+        this.initPlayer(player, playerStatus.scale);
 // =======
 //         const map = new THREE.TextureLoader().load( MainShooter1 );
 //         const material = new THREE.SpriteMaterial( { map: map, transparent: true } );
@@ -49,8 +49,8 @@ class Player extends THREE.Group {
         this.initShieldMesh(playerStatus.scale);
     }
 
-    initPlayer (scale) {
-        let texture = new THREE.TextureLoader().load(PLAYER);
+    initPlayer (player, scale) {
+        let texture = new THREE.TextureLoader().load(player);
         let material = new THREE.SpriteMaterial ( {map:texture} );
         this.sprite = new THREE.Sprite(material);
         this.sprite.scale.set(scale, scale, 1);

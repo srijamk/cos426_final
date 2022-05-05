@@ -9,11 +9,12 @@
 import * as THREE from 'three';
 import { WebGLRenderer, PerspectiveCamera, OrthographicCamera, Vector3 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { SeedScene, MainScene, StartScene, DifficultyScene } from 'scenes';
+import { SeedScene, MainScene, StartScene, DifficultyScene, ChoosePlayerScene } from 'scenes';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
 import { StartFont, SpaceMissionFont, CyberskyFont } from './fonts';
 import { SelectSound, SwitchSound, ShootSound } from './assets';
+import {MainShooter1, MainShooter2, MainShooter3} from './components/textures';
 
 
 // <<<<<<< test
@@ -34,6 +35,8 @@ camera.lookAt(0, 0, 0);
 let scene = new StartScene(camera.rotation);
 let sceneNumber = 0;
 let level = 0; // defaults to Easy
+let playersprite = 0;
+let player_sprites = [MainShooter1, MainShooter2, MainShooter3];
 let gameover = false;
 
 // Set up Top-down camera
@@ -92,6 +95,7 @@ window.addEventListener("keydown", function (event) {
         windowResizeHandler();
         scene = new StartScene(camera.rotation);
         sceneNumber = 0;
+        playersprite = 0;
         level = 0; // defaults to Easy
         gameover = false; 
         return;
@@ -105,20 +109,26 @@ window.addEventListener("keydown", function (event) {
             var myAudio = new Audio(SelectSound);
             myAudio.play();
             sceneNumber++;
-            scene = new DifficultyScene(new THREE.Euler().copy(camera.rotation));
-        } else if (sceneNumber == 1 || lastChildName === "gameover") {
+            scene = new ChoosePlayerScene(new THREE.Euler().copy(camera.rotation));
+        } else if (sceneNumber == 1) {
             // https://mixkit.co/free-sound-effects/click/
             var myAudio = new Audio(SelectSound);
             myAudio.play();
             sceneNumber++;
+            scene = new DifficultyScene(new THREE.Euler().copy(camera.rotation));
+
+        } else if (sceneNumber == 2 || lastChildName === "gameover") {
+            var myAudio = new Audio(SelectSound);
+            myAudio.play();
+            sceneNumber++;            
             camera = new THREE.OrthographicCamera(
                 cameraWidth / -2, cameraWidth / 2, cameraHeight / 2, cameraHeight / -2, 0, 1000
             );
             camera.position.set(0, 50, 0);
             camera.up.set(0, 0, -1);
             camera.lookAt(0, 0, 0);
-            scene = new MainScene(bounds, camera, level);
-        } else if (!frozen) {
+            scene = new MainScene(bounds, camera, level, player_sprites[playersprite]);
+        } else if (!frozen && sceneNumber == 3) {
             // if user presses Space while playing game, freeze and display a pause screen
             frozen = true;
             scene.freeze();
@@ -196,7 +206,7 @@ window.addEventListener("keydown", function (event) {
 
         renderer.render(scene, camera);
 
-    } else if (sceneNumber == 1) { 
+    } else if (sceneNumber == 2) { 
         
         if (event.keyCode == 37) {
             var myAudio = new Audio(SwitchSound);
@@ -212,6 +222,23 @@ window.addEventListener("keydown", function (event) {
             level++;
             if (level == 3) level = 0;
             scene.children[scene.children.length - 1 - (2 - level)].material.color.setHex(0xffffff);
+        }
+    } else if (sceneNumber == 1) {
+        console.log(scene.children);
+        if (event.keyCode == 37) {
+            var myAudio = new Audio(SwitchSound);
+            myAudio.play();
+            scene.children[playersprite * 2 + 1].material.color.setHex(0x000000);
+            playersprite--;
+            if (playersprite == -1) playersprite = 2;
+            scene.children[playersprite * 2 + 1].material.color.setHex(0xffffff);
+        } else if (event.keyCode == 39) {
+            var myAudio = new Audio(SwitchSound);
+            myAudio.play();
+            scene.children[playersprite * 2 + 1].material.color.setHex(0x000000);
+            playersprite++;
+            if (playersprite == 3) playersprite = 0;
+            scene.children[playersprite * 2 + 1].material.color.setHex(0xffffff);
         }
     }
     if (event.defaultPrevented) return; 
