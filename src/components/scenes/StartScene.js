@@ -44,7 +44,7 @@ class StartScene extends THREE.Scene {
         // load TextGeometry with instructions
         loader.load( CyberskyFont, function ( font ) {
         
-            const geometry = new TextGeometry( 'Instructions. Press Space to start.', {
+            const geometry = new TextGeometry( 'Instructions.', {
                 font: font,
                 size: 20,
                 height: 1,
@@ -60,7 +60,107 @@ class StartScene extends THREE.Scene {
             var txt = new THREE.Mesh(geometry, material);
             txt.rotation.copy(curScene.rotn);
             txt.translateZ(-10);
-            txt.translateY(-40);
+            txt.translateY(-50);
+            txt.renderOrder = 1;
+
+            curScene.add(txt);
+        } );
+
+        // load TextGeometry with instructions
+        loader.load( CyberskyFont, function ( font ) {
+        
+            const geometry = new TextGeometry( '1. Press f to shoot.', {
+                font: font,
+                size: 20,
+                height: 1,
+                curveSegments: 13,
+                bevelEnabled: false,
+            } );
+            geometry.center();
+
+            var material = new THREE.MeshBasicMaterial({
+                color: 0x000000,
+              });
+              
+            var txt = new THREE.Mesh(geometry, material);
+            txt.rotation.copy(curScene.rotn);
+            txt.translateZ(-10);
+            txt.translateY(-80);
+            txt.renderOrder = 1;
+
+            curScene.add(txt);
+        } );
+
+        // load TextGeometry with instructions
+        loader.load( CyberskyFont, function ( font ) {
+        
+            const geometry = new TextGeometry( '2. Collect green powerups to shield yourself.', {
+                font: font,
+                size: 20,
+                height: 1,
+                curveSegments: 13,
+                bevelEnabled: false,
+            } );
+            geometry.center();
+
+            var material = new THREE.MeshBasicMaterial({
+                color: 0x000000,
+              });
+              
+            var txt = new THREE.Mesh(geometry, material);
+            txt.rotation.copy(curScene.rotn);
+            txt.translateZ(-10);
+            txt.translateY(-110);
+            txt.renderOrder = 1;
+
+            curScene.add(txt);
+        } );
+
+        // load TextGeometry with instructions
+        loader.load( CyberskyFont, function ( font ) {
+        
+            const geometry = new TextGeometry( '3. Press space to pause the game.\n', {
+                font: font,
+                size: 20,
+                height: 1,
+                curveSegments: 13,
+                bevelEnabled: false,
+            } );
+            geometry.center();
+
+            var material = new THREE.MeshBasicMaterial({
+                color: 0x000000,
+              });
+              
+            var txt = new THREE.Mesh(geometry, material);
+            txt.rotation.copy(curScene.rotn);
+            txt.translateZ(-10);
+            txt.translateY(-140);
+            txt.renderOrder = 1;
+
+            curScene.add(txt);
+        } );
+
+        // load TextGeometry with instructions
+        loader.load( CyberskyFont, function ( font ) {
+        
+            const geometry = new TextGeometry( 'Now, press Space to start.', {
+                font: font,
+                size: 20,
+                height: 1,
+                curveSegments: 13,
+                bevelEnabled: false,
+            } );
+            geometry.center();
+
+            var material = new THREE.MeshBasicMaterial({
+                color: 0x000000,
+              });
+              
+            var txt = new THREE.Mesh(geometry, material);
+            txt.rotation.copy(curScene.rotn);
+            txt.translateZ(-10);
+            txt.translateY(-180);
             txt.renderOrder = 1;
 
             curScene.add(txt);
