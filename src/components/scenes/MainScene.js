@@ -9,6 +9,7 @@ import {ShootSound, LooseLife, Defeat, Victory} from '../../assets';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
 import { StartFont, SpaceMissionFont, CyberskyFont } from '../../fonts';
+import ParticleEffect from '../objects/Effects/ParticleEffect';
 
 // modified effects from: https://github.com/mrdoob/three.js/blob/master/examples/webgl_buffergeometry_custom_attributes_particles.html
 
