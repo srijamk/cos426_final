@@ -5,7 +5,7 @@ import { Player, Wall, Enemy, Powerups } from 'objects';
 import SPARK from '../textures/spark1.png';
 import { Vector3 } from 'three';
 import Bullets from '../objects/Bullets/Bullets';
-import {ShootSound, LooseLife, Defeat, Victory} from '../../assets';
+import {ShootSound, LooseLife, Defeat, Victory, BGM} from '../../assets';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
 import { StartFont, SpaceMissionFont, CyberskyFont } from '../../fonts';
@@ -84,6 +84,7 @@ class MainScene extends THREE.Scene {
         }
 
         this.init();
+        this.bgm = new Audio(BGM);
     }
 
     init () {
@@ -553,8 +554,11 @@ class MainScene extends THREE.Scene {
         }
         if (this.status.isPaused) {
             powerupTime = Math.floor(timeStamp / waitTime);
+            this.bgm.pause();
             return;
         }
+
+        this.bgm.play();
         this.player.update();
         for (let i = 0; i < this.bullets.length; i++) {
             let x = undefined;
