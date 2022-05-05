@@ -32,7 +32,8 @@ const enemy_info = [
         "enemy_movement": "static", 
         "enemy_scale": ENEMY_SCALE, 
         "enemy_radius": ENEMY_RADIUS, 
-        "bullet_level": 0
+        "bullet_level": 0, 
+        "bullet_dmg": 1
     }, 
     {
         "level": 1, 
@@ -42,7 +43,8 @@ const enemy_info = [
         "enemy_movement": "horizontal",
         "enemy_scale": ENEMY_SCALE, 
         "enemy_radius": ENEMY_RADIUS, 
-        "bullet_level": 1
+        "bullet_level": 1, 
+        "bullet_dmg": 2
     }, 
     {
         "level": 2,
@@ -52,7 +54,8 @@ const enemy_info = [
         "enemy_movement": "random",
         "enemy_scale": ENEMY_SCALE, 
         "enemy_radius": ENEMY_RADIUS, 
-        "bullet_level": 1
+        "bullet_level": 2, 
+        "bullet_dmg": 2
     }
 ]
 
@@ -129,7 +132,8 @@ class MainScene extends THREE.Scene {
           },
           owner: "player", 
           velocity: -8, 
-          level: 0
+          level: 0, // not needed for player
+          dmg: 0 // not needed for player
         };
         for (let i = 0; i < this.bullets.length; i++) {
             this.bullets[i] = new Bullets(bulletStatus);
@@ -173,7 +177,8 @@ class MainScene extends THREE.Scene {
           },
           owner: "enemy", 
           velocity: -8, 
-          level: enemy_info[this.level].bullet_level
+          level: enemy_info[this.level].bullet_level, 
+          dmg: enemy_info[this.level].bullet_dmg
         };
         // e.bullet = new Bullets(bulletStatus);
         // e.bullet.isEnemy = true;
@@ -473,7 +478,6 @@ class MainScene extends THREE.Scene {
             return;
         
         let elapsedTime = timeStamp - this.lastEnemySpawnTime;
-        //console.log(elapsedTime)
         let spawn_prob = (elapsedTime/(10*60*60*100))*0.4;
         // console.log(spawn_prob)
         let final_spawn_num;
@@ -505,7 +509,8 @@ class MainScene extends THREE.Scene {
                 },
                 owner: "enemy", 
                 velocity: -8, 
-                level: enemy_info[this.level].bullet_level
+                level: enemy_info[this.level].bullet_level, 
+                dmg: enemy_info[this.level].bullet_dmg
             };
             // e.bullet = new Bullets(bulletStatus);
             // e.bullet.isEnemy = true;
@@ -540,7 +545,8 @@ class MainScene extends THREE.Scene {
         if (shieldStart) {
             let powerupDuration = timeStamp - shieldStart;
             if (powerupDuration > 5000) {
-                this.player.hasShield = false;
+                // this.player.hasShield = false;
+                this.player.disableShield();
                 shieldStart = undefined;
             }
         }
@@ -570,7 +576,8 @@ class MainScene extends THREE.Scene {
             }
             e.bullets[0].enemyUpdate();
             if(e.bullets[0].handlePlayerBulletCollision(this.player)) {
-                this.removeOneHealth();
+                for (let i = 0; i < e.bullets[0].dmg; i++)
+                    this.removeOneHealth();
                 this.player.blink(timeStamp);
                 var myAudio = new Audio(LooseLife);
                 myAudio.volume = 0.2;

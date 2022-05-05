@@ -45,6 +45,8 @@ class Player extends THREE.Group {
         this.blinkStart = undefined;
         this.continueBlink = false;
         this.hasShield = false;
+
+        this.initShieldMesh(playerStatus.scale);
     }
 
     initPlayer (player, scale) {
@@ -53,6 +55,25 @@ class Player extends THREE.Group {
         this.sprite = new THREE.Sprite(material);
         this.sprite.scale.set(scale, scale, 1);
         this.add(this.sprite);
+    }
+
+    initShieldMesh (scale) {
+        let geometry = new THREE.CylinderBufferGeometry(scale, scale , 1, 32);
+        this.shieldMaterial = new THREE.MeshBasicMaterial({color: 0xB0C400, transparent: true, opacity: 0});
+        let circle = new THREE.Mesh(geometry, this.shieldMaterial);
+        circle.position.y = 0;
+        // circle.position.set(this.position.x, 0, this.position.z)
+        this.add(circle)
+    }
+
+    enableShield () {
+        this.shieldMaterial.opacity = 0.3;
+        this.hasShield = true;
+    }
+
+    disableShield () {
+        this.shieldMaterial.opacity = 0;
+        this.hasShield = false;
     }
 
     removeOneHealth() {

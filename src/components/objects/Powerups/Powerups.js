@@ -47,7 +47,8 @@ class Powerups extends THREE.Group {
     if (dist < 25 && this.isAlive) {
       this.IsAlive = false;
       this.sprite.material.opacity = 0.0;
-      player.hasShield = true;
+      player.enableShield();
+      // player.hasShield = true;
       return true;
     }
   }
