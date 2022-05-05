@@ -19,6 +19,9 @@ const ENEMY_SCALE = 50;
 const NUM_ENEMIES = 10;
 const ENEMY_SPEED = 90; // math.random() * 20 + 90 -> [90, 110]
 const ENEMY_RADIUS = 1.3;
+let powerupTime = 0;
+let waitTime = 10000;
+let shieldStart = undefined;
 
 const enemy_info = [
     {
@@ -137,18 +140,29 @@ class MainScene extends THREE.Scene {
         }
         this.lastShootTime = -1;
         this.win = false;
-        // this.initPowerups();
+        this.initPowerup();
     }
 
-    // initPowerups() {
-    //     this.powerups = new Array(10);
-    //     let powerupStatus = {
-    //         power: undefined
-    //     }
-    //     for(let i = 0; i < this.powerups.length; i++) {
-    //         this.powerups[i] = new Powerups(powerupStatus);
-    //     }
-    // }
+    initPowerup() {
+        let powerupStatus = {
+          power: undefined,
+          boundaryWidth: {
+            left: -this.bounds.width / 2 + PLAYER_SCALE,
+            right: this.bounds.width / 2 - PLAYER_SCALE,
+          },
+          boundaryHeight: {
+            top: -this.bounds.height / 2 + 30,
+            bottom: this.bounds.height / 2 - 30,
+          },
+          playerPos: new THREE.Vector3(
+            0,
+            0,
+            this.bounds.height / 2 - PLAYER_SCALE
+          ),
+        };
+        this.powerup = new Powerups(powerupStatus);
+        this.add(this.powerup.sprite);
+    }
     // add bullets for each enemy
     initEnemyBullets() {
         this.enemies.forEach((e) => {
@@ -271,7 +285,7 @@ class MainScene extends THREE.Scene {
         this.health_bar_angle -= Math.PI / 4.0;
         this.health_mesh.geometry.dispose();
         this.health_mesh.geometry = new THREE.RingGeometry(30, 40, 8, 8, 0, this.health_bar_angle);
-        console.log(this.health_mesh.geometry.parameters.thetaLength);
+        // console.log(this.health_mesh.geometry.parameters.thetaLength);
     }
 
     returnVertexShader() {
@@ -458,11 +472,13 @@ class MainScene extends THREE.Scene {
     // 2. after certain amount of time, spawn new enemies, until max is reached
     checkEnemyUpgrades (timeStamp) {
         let totalEnemiesNum = this.checkAliveEnemies();
+        // console.log(totalEnemiesNum)
         if (totalEnemiesNum >= enemy_info[this.level].max_enemy_num)
             return;
         
         let elapsedTime = timeStamp - this.lastEnemySpawnTime;
         let spawn_prob = (elapsedTime/(10*60*60*100))*0.4;
+        // console.log(spawn_prob)
         let final_spawn_num;
         if (totalEnemiesNum === 0) {
             spawn_prob = 1;
@@ -520,23 +536,22 @@ class MainScene extends THREE.Scene {
     }
 
     dropPowerup() {
-        let powerupStatus = {
-          power: undefined,
-          boundaryWidth: {
-            left: -this.bounds.width / 2 + PLAYER_SCALE,
-            right: this.bounds.width / 2 - PLAYER_SCALE,
-          },
-          boundaryHeight: {
-            top: -this.bounds.height / 2 + 30,
-            bottom: this.bounds.height / 2 - 30,
-          }
-        };
-        let powerup = new Powerups(powerupStatus);
-        powerup.drop();
+        this.powerup.drop();
+        // console.log("hello");
     }
 
     update (timeStamp) {
-        if (this.status.isPaused) return;
+        if (shieldStart) {
+            let powerupDuration = timeStamp - shieldStart;
+            if (powerupDuration > 5000) {
+                this.player.hasShield = false;
+                shieldStart = undefined;
+            }
+        }
+        if (this.status.isPaused) {
+            powerupTime = Math.floor(timeStamp / waitTime);
+            return;
+        }
         this.player.update();
         for (let i = 0; i < this.bullets.length; i++) {
             let x = undefined;
@@ -576,12 +591,17 @@ class MainScene extends THREE.Scene {
             //     e.bullets[i].enemyUpdate(); 
             // }
         })
-        this.dropPowerup();
-        // let powerupTime = 0;
-        // if(timeStamp / 5000 > powerupTime) {
-        //     this.dropPowerup();
-        //     powerupTime++;
-        // }
+         
+
+        if(Math.floor(timeStamp / waitTime) > powerupTime) {
+            this.dropPowerup();
+            powerupTime += 1;
+        }
+        let caught = this.powerup.update(this.player);
+        if (caught) {
+            shieldStart = timeStamp;
+            // this.player.blink(timeStamp);
+        }
         this.checkEnemyUpgrades(timeStamp);
         if (deadEnemies == NUM_ENEMIES) {
             this.win = true;

@@ -82,6 +82,11 @@ class Bullets extends THREE.Group {
 
     handlePlayerBulletCollision(player) {
         let dist = this.distance(this.particle.position, player.position);
+        if (player.hasShield) {
+            console.log("this player has shield");
+            return;
+        }
+
         if(dist < 25) {
             this.bulletIsAlive = false;
             this.particle.material.opacity = 0.0;
@@ -137,10 +142,6 @@ class Bullets extends THREE.Group {
         this.particle = sprite;
     }
 
-    // bullet will explode at this location
-    bulletExplode (pos) {
-
-    }
 
     // upgrade bullet
     upgrade() {
