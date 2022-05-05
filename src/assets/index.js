@@ -8,5 +8,5 @@ export { default as LifeHeart } from "./defender_heart_live.png";
 export { default as LooseLife } from "./lose_life.mp3";
 export { default as Defeat } from "./defeat_sound.mp3";
 export { default as Victory } from "./level_complete.mp3";
-export { default as MainSceneBG } from './Moonlancer_Menu.mp3';
+export { default as MainSceneBGM } from './startscenebgm.mp3';
 export { default as BGM} from './Asteroid_Field_C-3.mp3';

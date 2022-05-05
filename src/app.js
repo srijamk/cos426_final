@@ -13,8 +13,9 @@ import { SeedScene, MainScene, StartScene, DifficultyScene, ChoosePlayerScene } 
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
 import { StartFont, SpaceMissionFont, CyberskyFont } from './fonts';
-import { SelectSound, SwitchSound, ShootSound } from './assets';
+import { SelectSound, SwitchSound, ShootSound, MainSceneBGM } from './assets';
 import {MainShooter1, MainShooter2, MainShooter3} from './components/textures';
+
 
 
 // <<<<<<< test
@@ -38,6 +39,9 @@ let level = 0; // defaults to Easy
 let playersprite = 0;
 let player_sprites = [MainShooter1, MainShooter2, MainShooter3];
 let gameover = false;
+
+let startSceneBGM = new Audio(MainSceneBGM);
+startSceneBGM.play();
 
 // Set up Top-down camera
 // >>>>>>> main
@@ -94,6 +98,7 @@ window.addEventListener("keydown", function (event) {
         // initialize start scene
         windowResizeHandler();
         scene = new StartScene(camera.rotation);
+        startSceneBGM.play();
         sceneNumber = 0;
         playersprite = 0;
         level = 0; // defaults to Easy
@@ -104,7 +109,6 @@ window.addEventListener("keydown", function (event) {
     // if we're on start scene and user presses Space, move to game scene (MainScene)
     if (event.keyCode == 32) {
         // first check if game is over
-
         if (sceneNumber == 0) {
             var myAudio = new Audio(SelectSound);
             myAudio.play();
@@ -127,6 +131,7 @@ window.addEventListener("keydown", function (event) {
             camera.position.set(0, 50, 0);
             camera.up.set(0, 0, -1);
             camera.lookAt(0, 0, 0);
+            startSceneBGM.pause();
             scene = new MainScene(bounds, camera, level, player_sprites[playersprite]);
         } else if (!frozen && sceneNumber == 3) {
             // if user presses Space while playing game, freeze and display a pause screen
