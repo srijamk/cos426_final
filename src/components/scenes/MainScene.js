@@ -57,11 +57,12 @@ const enemy_info = [
 ]
 
 class MainScene extends THREE.Scene {
-    constructor (bounds, camera, level) {
+    constructor (bounds, camera, level, player) {
         super();
 
         this.bounds = bounds;
         this.level = level;
+        this.player = player;
 
         this.background = new Color(0x000000);
 
@@ -86,7 +87,7 @@ class MainScene extends THREE.Scene {
         this.initStars();
 
         // add player
-        this.player = new Player(this.playerStatus, this.camera);
+        this.player = new Player(this.playerStatus, this.camera, this.player);
 
         // show health bar
         this.health_color = 0x00ff00;
